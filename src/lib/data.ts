@@ -115,11 +115,14 @@ export async function getUserListings(userId: string): Promise<Car[]> {
     if (!userId) return [];
     
     const carListingsRef = collection(db, 'carListings');
-    const q = query(carListingsRef, where('userId', '==', userId), orderBy('createdAt', 'desc'));
+    const q = query(carListingsRef, where('userId', '==', userId));
 
     try {
         const snapshot = await getDocs(q);
-        return snapshot.docs.map(docToCar);
+        const listings = snapshot.docs.map(docToCar);
+        // Sort listings by date descending (newest first)
+        listings.sort((a, b) => b.postedAt.getTime() - a.postedAt.getTime());
+        return listings;
     } catch (e) {
         console.error(`Error getting listings for user ${userId}:`, e);
         return [];

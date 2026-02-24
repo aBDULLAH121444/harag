@@ -7,15 +7,21 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Search } from 'lucide-react';
 import React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function FilterBar() {
   const router = useRouter();
   const searchParams = useSearchParams();
   
+  const [isMounted, setIsMounted] = React.useState(false);
   const [selectedMake, setSelectedMake] = React.useState(searchParams.get('make') || '');
   const [selectedModel, setSelectedModel] = React.useState(searchParams.get('model') || '');
   const [selectedYear, setSelectedYear] = React.useState(searchParams.get('year') || '');
   const [maxPrice, setMaxPrice] = React.useState(searchParams.get('maxPrice') || '');
+
+  React.useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   React.useEffect(() => {
     // When the selected make is changed, if the current model is not valid for the new make, reset it.
@@ -38,6 +44,41 @@ export default function FilterBar() {
     
     router.push(`/?${params.toString()}`);
   };
+
+  if (!isMounted) {
+    return (
+      <Card className="mb-8 shadow-sm">
+        <CardContent className="p-4 space-y-4">
+            <div className="space-y-2">
+                <Skeleton className="h-5 w-24 mb-2" />
+                <div className="flex flex-wrap gap-2">
+                    <Skeleton className="h-10 w-16" />
+                    <Skeleton className="h-10 w-24" />
+                    <Skeleton className="h-10 w-24" />
+                    <Skeleton className="h-10 w-32" />
+                    <Skeleton className="h-10 w-28" />
+                </div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                <div className="space-y-1">
+                    <Skeleton className="h-5 w-16 mb-1" />
+                    <Skeleton className="h-10 w-full" />
+                </div>
+                <div className="space-y-1">
+                    <Skeleton className="h-5 w-12 mb-1" />
+                    <Skeleton className="h-10 w-full" />
+                </div>
+                <div className="space-y-1">
+                    <Skeleton className="h-5 w-20 mb-1" />
+                    <Skeleton className="h-10 w-full" />
+                </div>
+                <Skeleton className="h-10 w-full" />
+            </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="mb-8 shadow-sm">

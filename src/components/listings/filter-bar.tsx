@@ -122,12 +122,12 @@ export default function FilterBar() {
                 </div>
                 <div className="md:col-span-1">
                      <label className="text-sm font-medium text-muted-foreground">السنة</label>
-                    <Select value={selectedYear} onValueChange={setSelectedYear}>
+                    <Select value={selectedYear} onValueChange={(val) => setSelectedYear(val === 'all' ? '' : val)}>
                         <SelectTrigger>
                         <SelectValue placeholder="اختر السنة" />
                         </SelectTrigger>
                         <SelectContent>
-                        <SelectItem value="">اختر السنة</SelectItem>
+                        <SelectItem value="all">كل السنوات</SelectItem>
                         {CAR_YEARS.map((year) => (
                             <SelectItem key={year} value={String(year)}>
                             {year}
@@ -138,12 +138,12 @@ export default function FilterBar() {
                 </div>
                 <div className="md:col-span-1">
                      <label className="text-sm font-medium text-muted-foreground">أعلى سعر</label>
-                    <Select value={maxPrice} onValueChange={setMaxPrice}>
+                    <Select value={maxPrice} onValueChange={(val) => setMaxPrice(val === 'all' ? '' : val)}>
                         <SelectTrigger>
                         <SelectValue placeholder="أي سعر" />
                         </SelectTrigger>
                         <SelectContent>
-                        <SelectItem value="">أي سعر</SelectItem>
+                        <SelectItem value="all">أي سعر</SelectItem>
                         {[50000, 75000, 100000, 150000, 200000, 300000].map((price) => (
                             <SelectItem key={price} value={String(price)}>
                             {price.toLocaleString()} ريال سعودي

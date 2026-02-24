@@ -6,9 +6,38 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent } from '@/components/ui/card';
 import { Search } from 'lucide-react';
 import React from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function FilterBar() {
-  const [selectedMake, setSelectedMake] = React.useState<string>('');
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  
+  const [selectedMake, setSelectedMake] = React.useState(searchParams.get('make') || '');
+  const [selectedModel, setSelectedModel] = React.useState(searchParams.get('model') || '');
+  const [selectedYear, setSelectedYear] = React.useState(searchParams.get('year') || '');
+  const [maxPrice, setMaxPrice] = React.useState(searchParams.get('maxPrice') || '');
+
+  React.useEffect(() => {
+    // When the selected make is changed, if the current model is not valid for the new make, reset it.
+    if (selectedMake && !CAR_MODELS[selectedMake]?.includes(selectedModel)) {
+      setSelectedModel('');
+    }
+  }, [selectedMake, selectedModel]);
+
+  const handleSearch = () => {
+    const params = new URLSearchParams();
+
+    if (selectedMake) {
+      params.set('make', selectedMake);
+      if (selectedModel) {
+        params.set('model', selectedModel);
+      }
+    }
+    if (selectedYear) params.set('year', selectedYear);
+    if (maxPrice) params.set('maxPrice', maxPrice);
+    
+    router.push(`/?${params.toString()}`);
+  };
 
   return (
     <Card className="mb-8 shadow-sm">
@@ -37,7 +66,7 @@ export default function FilterBar() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                 <div className="md:col-span-1">
                      <label className="text-sm font-medium text-muted-foreground">الموديل</label>
-                    <Select disabled={!selectedMake}>
+                    <Select value={selectedModel} onValueChange={setSelectedModel} disabled={!selectedMake}>
                         <SelectTrigger>
                         <SelectValue placeholder="اختر الموديل" />
                         </SelectTrigger>
@@ -52,11 +81,12 @@ export default function FilterBar() {
                 </div>
                 <div className="md:col-span-1">
                      <label className="text-sm font-medium text-muted-foreground">السنة</label>
-                    <Select>
+                    <Select value={selectedYear} onValueChange={setSelectedYear}>
                         <SelectTrigger>
                         <SelectValue placeholder="اختر السنة" />
                         </SelectTrigger>
                         <SelectContent>
+                        <SelectItem value="">اختر السنة</SelectItem>
                         {CAR_YEARS.map((year) => (
                             <SelectItem key={year} value={String(year)}>
                             {year}
@@ -67,11 +97,12 @@ export default function FilterBar() {
                 </div>
                 <div className="md:col-span-1">
                      <label className="text-sm font-medium text-muted-foreground">أعلى سعر</label>
-                    <Select>
+                    <Select value={maxPrice} onValueChange={setMaxPrice}>
                         <SelectTrigger>
                         <SelectValue placeholder="أي سعر" />
                         </SelectTrigger>
                         <SelectContent>
+                        <SelectItem value="">أي سعر</SelectItem>
                         {[50000, 75000, 100000, 150000, 200000, 300000].map((price) => (
                             <SelectItem key={price} value={String(price)}>
                             {price.toLocaleString()} ريال سعودي
@@ -80,7 +111,7 @@ export default function FilterBar() {
                         </SelectContent>
                     </Select>
                 </div>
-                <Button className="w-full">
+                <Button className="w-full" onClick={handleSearch}>
                     <Search className="ml-2 h-4 w-4" />
                     بحث
                 </Button>

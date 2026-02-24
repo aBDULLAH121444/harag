@@ -133,8 +133,31 @@ const cars: Car[] = [
   },
 ];
 
-export function getListings() {
-  return cars;
+export function getListings(filters?: {
+    make?: string;
+    model?: string;
+    year?: string;
+    maxPrice?: string;
+  }) {
+    if (!filters || Object.keys(filters).length === 0) {
+      return cars;
+    }
+  
+    return cars.filter(car => {
+      if (filters.make && car.make !== filters.make) {
+        return false;
+      }
+      if (filters.model && car.model !== filters.model) {
+        return false;
+      }
+      if (filters.year && car.year.toString() !== filters.year) {
+        return false;
+      }
+      if (filters.maxPrice && car.price > parseInt(filters.maxPrice, 10)) {
+        return false;
+      }
+      return true;
+    });
 }
 
 export function getListingById(id: string) {

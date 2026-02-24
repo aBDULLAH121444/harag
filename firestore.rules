@@ -1,0 +1,166 @@
+/**
+ * Core Philosophy: This ruleset enforces a strict user-ownership model for private data,
+ * while providing a clear and secure separation for publicly accessible data like car listings.
+ * The primary goal is security and performance, achieved through data denormalization
+ * and structural segregation.
+ *
+ * Data Structure:
+ * - /users/{userId}: Contains all private, user-specific data, including their profile,
+ *   draft listings, and saved searches. All access within this tree is controlled by
+ *   the {userId} path parameter.
+ * - /carListings/{listingId}: A top-level collection for all publicly visible car listings.
+ * - /messages/{messageId}: A top-level collection for direct messages between users.
+ *
+ * Key Security Decisions:
+ * - Public vs. Private Listings: Active listings are in a public collection, while drafts
+ *   are in a private user subcollection. This is more secure and performant than a single
+ *   collection with a status flag.
+ * - Direct Message Security: Access to a message is strictly limited to the sender and
+ *   the receiver, enforced by fields on the message document itself.
+ * - No User Listing: It is not possible to list all users in the system.
+ * - Owner-Only Writes: All write operations are protected, ensuring users can only modify
+ *   their own data.
+ *
+ * Denormalization for Authorization:
+ * To ensure fast and simple rules, authorization-critical data is denormalized.
+ * - Car listings in `/carListings` contain a `userId` field to verify ownership on writes
+ *   without needing extra database reads.
+ * - Messages in `/messages` contain `senderId` and `receiverId` fields, allowing rules to
+ *   grant access directly to participants.
+ *
+ * Structural Segregation:
+ * The separation of `/carListings` (public) from `/users/{userId}/carListingDrafts` (private)
+ * is a key design choice. This prevents accidental data leakage and simplifies the
+ * security rules for both collections, as they serve distinct purposes and have
+ * different security postures.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper Functions
+
+    /**
+     * Checks if a user is authenticated.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * Checks if the currently authenticated user's UID matches the provided userId.
+     */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /**
+     * Checks for ownership on an existing document, preventing actions on non-existent data.
+     */
+    function isExistingOwner(userId) {
+      return isOwner(userId) && resource != null;
+    }
+
+    /**
+     * Checks if the user is a participant (sender or receiver) of an existing message.
+     */
+    function isMessageParticipant() {
+      return isSignedIn() && resource != null && (request.auth.uid == resource.data.senderId || request.auth.uid == resource.data.receiverId);
+    }
+
+    /**
+     * Checks if the user is the sender of an existing message.
+     */
+    function isMessageSender() {
+      return isSignedIn() && resource != null && request.auth.uid == resource.data.senderId;
+    }
+
+    /**
+     * Checks if the user is the receiver of an existing message.
+     */
+    function isMessageReceiver() {
+      return isSignedIn() && resource != null && request.auth.uid == resource.data.receiverId;
+    }
+
+    /**
+     * @description Controls access to user profile documents.
+     * @path /users/{userId}
+     * @allow (create) An authenticated user creating their own profile document.
+     * @allow (get, update) The authenticated user accessing or modifying their own profile.
+     * @deny (list) Any user attempting to list all user profiles.
+     * @deny (get) An authenticated user attempting to read another user's profile.
+     * @principle Restricts access to a user's own data tree and enforces self-creation.
+     */
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if false;
+      allow create: if isOwner(userId) && request.resource.data.id == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingOwner(userId);
+
+      /**
+       * @description Controls access to private car listing drafts owned by a user.
+       * @path /users/{userId}/carListingDrafts/{draftId}
+       * @allow (create, list) A user creating or listing their own draft documents.
+       * @deny (get) A user trying to read another user's draft.
+       * @principle Enforces strict ownership within a user's private data subcollection.
+       */
+      match /carListingDrafts/{draftId} {
+        allow get: if isOwner(userId);
+        allow list: if isOwner(userId);
+        allow create: if isOwner(userId) && request.resource.data.userId == userId;
+        allow update: if isExistingOwner(userId) && request.resource.data.userId == resource.data.userId;
+        allow delete: if isExistingOwner(userId);
+      }
+
+      /**
+       * @description Controls access to private saved searches owned by a user.
+       * @path /users/{userId}/savedSearches/{searchId}
+       * @allow (create, list) A user creating or listing their own saved searches.
+       * @deny (get) A user trying to read another user's saved search.
+       * @principle Enforces strict ownership within a user's private data subcollection.
+       */
+      match /savedSearches/{searchId} {
+        allow get: if isOwner(userId);
+        allow list: if isOwner(userId);
+        allow create: if isOwner(userId) && request.resource.data.userId == userId;
+        allow update: if isExistingOwner(userId) && request.resource.data.userId == resource.data.userId;
+        allow delete: if isExistingOwner(userId);
+      }
+    }
+
+    /**
+     * @description Controls access to the public collection of car listings.
+     * @path /carListings/{listingId}
+     * @allow (get, list) Any user, authenticated or not, reading any listing.
+     * @allow (create) An authenticated user creating a new listing for themself.
+     * @deny (update, delete) A user trying to modify a listing they do not own.
+     * @principle Implements a "Public Read, Owner-Only Write" pattern using a denormalized 'userId' field.
+     */
+    match /carListings/{listingId} {
+      allow get: if true;
+      allow list: if true;
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow update: if isExistingOwner(resource.data.userId) && request.resource.data.userId == resource.data.userId;
+      allow delete: if isExistingOwner(resource.data.userId);
+    }
+
+    /**
+     * @description Controls access to direct messages between users.
+     * @path /messages/{messageId}
+     * @allow (get) The sender or receiver of a message reading it.
+     * @allow (create) An authenticated user sending a message.
+     * @allow (update) The receiver of a message updating it (e.g., to mark as read).
+     * @deny (list) Any user attempting to list all messages in the database.
+     * @deny (get) A user trying to read a message they did not send or receive.
+     * @principle Restricts access to a document based on participant IDs ('senderId', 'receiverId') stored within it.
+     */
+    match /messages/{messageId} {
+      allow get: if isMessageParticipant();
+      allow list: if false;
+      allow create: if isSignedIn() && request.resource.data.senderId == request.auth.uid;
+      allow update: if isMessageReceiver() && request.resource.data.senderId == resource.data.senderId && request.resource.data.receiverId == resource.data.receiverId;
+      allow delete: if isMessageSender();
+    }
+  }
+}

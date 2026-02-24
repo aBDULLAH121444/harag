@@ -1,0 +1,358 @@
+{
+  "entities": {
+    "UserProfile": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "UserProfile",
+      "type": "object",
+      "description": "Represents a user registered on the Haraj Al-Yemen car marketplace, allowing them to create listings, save searches, and manage their profile.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the UserProfile entity."
+        },
+        "email": {
+          "type": "string",
+          "description": "The user's email address, used for communication and login. This must be unique across all users.",
+          "format": "email"
+        },
+        "username": {
+          "type": "string",
+          "description": "A unique username chosen by the user for display purposes on the platform."
+        },
+        "firstName": {
+          "type": "string",
+          "description": "The first name of the user."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "The last name of the user."
+        },
+        "phoneNumber": {
+          "type": "string",
+          "description": "The user's phone number, potentially used for direct contact regarding listings if they opt-in."
+        },
+        "location": {
+          "type": "string",
+          "description": "The general geographical location of the user (e.g., city, region), used for localizing listings and searches."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp indicating when the user profile was initially created.",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp indicating when the user profile was last updated.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "email",
+        "username",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "CarListing": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "CarListing",
+      "type": "object",
+      "description": "Represents a detailed advertisement for a car available for sale on the Haraj Al-Yemen marketplace.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the CarListing entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to the UserProfile who created and owns this car listing. (Relationship: UserProfile 1:N CarListing)"
+        },
+        "title": {
+          "type": "string",
+          "description": "A concise and informative title for the car listing, e.g., '2018 Toyota Camry for Sale'."
+        },
+        "make": {
+          "type": "string",
+          "description": "The manufacturer or brand of the car (e.g., 'Toyota', 'Nissan')."
+        },
+        "model": {
+          "type": "string",
+          "description": "The specific model of the car (e.g., 'Camry', 'Patrol', 'Hilux')."
+        },
+        "year": {
+          "type": "number",
+          "description": "The manufacturing year of the car."
+        },
+        "price": {
+          "type": "number",
+          "description": "The asking price for the car."
+        },
+        "currency": {
+          "type": "string",
+          "description": "The currency in which the price is listed (e.g., 'YER' for Yemeni Rial, 'USD')."
+        },
+        "description": {
+          "type": "string",
+          "description": "A detailed narrative description of the car, including features, condition, and history, possibly assisted by AI."
+        },
+        "images": {
+          "type": "array",
+          "description": "An array of URLs, each pointing to a high-resolution image of the car.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "mileage": {
+          "type": "number",
+          "description": "The total distance the car has traveled, typically measured in kilometers."
+        },
+        "transmissionType": {
+          "type": "string",
+          "description": "The type of transmission in the car (e.g., 'automatic', 'manual')."
+        },
+        "fuelType": {
+          "type": "string",
+          "description": "The type of fuel the car uses (e.g., 'petrol', 'diesel', 'electric', 'hybrid')."
+        },
+        "bodyType": {
+          "type": "string",
+          "description": "The body style of the car (e.g., 'sedan', 'SUV', 'hatchback', 'pickup truck')."
+        },
+        "color": {
+          "type": "string",
+          "description": "The exterior color of the car."
+        },
+        "location": {
+          "type": "string",
+          "description": "The specific city or region where the car is physically located, facilitating local searches."
+        },
+        "status": {
+          "type": "string",
+          "description": "The current status of the listing (e.g., 'active', 'sold', 'pending', 'draft', 'expired')."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp indicating when the car listing was initially created.",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp indicating when the car listing was last updated.",
+          "format": "date-time"
+        },
+        "viewCount": {
+          "type": "number",
+          "description": "The total number of times this listing has been viewed by prospective buyers."
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "title",
+        "make",
+        "model",
+        "year",
+        "price",
+        "currency",
+        "description",
+        "images",
+        "location",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "SavedSearch": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "SavedSearch",
+      "type": "object",
+      "description": "Represents a set of search criteria saved by a user for convenient re-application and potential notifications on new matching listings.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the SavedSearch entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to the UserProfile who saved this search. (Relationship: UserProfile 1:N SavedSearch)"
+        },
+        "searchName": {
+          "type": "string",
+          "description": "A user-defined, descriptive name for this saved search (e.g., 'My SUV Search', 'Toyota Sedans in Sana'a')."
+        },
+        "criteriaJson": {
+          "type": "string",
+          "description": "A JSON string representing the specific search filters and keywords (e.g., '{\"make\": \"Toyota\", \"minPrice\": 5000, \"bodyType\": \"SUV\", \"location\": \"Sana'a\"}')."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp indicating when the saved search was initially created.",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp indicating when the saved search was last updated.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "searchName",
+        "criteriaJson",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "Message": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Message",
+      "type": "object",
+      "description": "Represents a direct communication or inquiry between a buyer and a seller regarding a specific car listing.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Message entity."
+        },
+        "senderId": {
+          "type": "string",
+          "description": "Reference to the UserProfile who sent this message (typically the buyer). (Relationship: UserProfile 1:N Message)"
+        },
+        "receiverId": {
+          "type": "string",
+          "description": "Reference to the UserProfile who is the intended recipient of this message (typically the seller). (Relationship: UserProfile 1:N Message)"
+        },
+        "carListingId": {
+          "type": "string",
+          "description": "Reference to the CarListing that this message is related to. (Relationship: CarListing 1:N Message)"
+        },
+        "subject": {
+          "type": "string",
+          "description": "A brief subject line summarizing the message content."
+        },
+        "body": {
+          "type": "string",
+          "description": "The main content or text of the message being sent."
+        },
+        "sentAt": {
+          "type": "string",
+          "description": "Timestamp indicating when the message was sent.",
+          "format": "date-time"
+        },
+        "isRead": {
+          "type": "boolean",
+          "description": "A flag indicating whether the message has been read by the receiver."
+        }
+      },
+      "required": [
+        "id",
+        "senderId",
+        "receiverId",
+        "carListingId",
+        "body",
+        "sentAt",
+        "isRead"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "UserProfile",
+          "schema": {
+            "$ref": "#/backend/entities/UserProfile"
+          },
+          "description": "Individual user profiles, where the document ID is the user's Firebase Auth UID. Accessible only by the owning user. Authorization is path-based and independent.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier (Firebase Auth UID) of the user who owns this profile."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/carListings/{listingId}",
+        "definition": {
+          "entityName": "CarListing",
+          "schema": {
+            "$ref": "#/backend/entities/CarListing"
+          },
+          "description": "Publicly active car listings available for browsing. Documents here must have `status: 'active'`. Includes denormalized 'userId' for write authorization independence.",
+          "params": [
+            {
+              "name": "listingId",
+              "description": "The unique identifier for the car listing."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/carListingDrafts/{draftId}",
+        "definition": {
+          "entityName": "CarListing",
+          "schema": {
+            "$ref": "#/backend/entities/CarListing"
+          },
+          "description": "Private drafts of car listings belonging to a specific user. Documents here must have `status: 'draft'`. Accessible only by the owning user. Authorization is path-based and independent.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier (Firebase Auth UID) of the user who owns this draft."
+            },
+            {
+              "name": "draftId",
+              "description": "The unique identifier for the car listing draft."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/savedSearches/{searchId}",
+        "definition": {
+          "entityName": "SavedSearch",
+          "schema": {
+            "$ref": "#/backend/entities/SavedSearch"
+          },
+          "description": "Private collections of saved search criteria for a specific user. Accessible only by the owning user. Authorization is path-based and independent.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier (Firebase Auth UID) of the user who owns this saved search."
+            },
+            {
+              "name": "searchId",
+              "description": "The unique identifier for the saved search."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/messages/{messageId}",
+        "definition": {
+          "entityName": "Message",
+          "schema": {
+            "$ref": "#/backend/entities/Message"
+          },
+          "description": "Direct messages exchanged between users regarding car listings. Each message document includes 'senderId' and 'receiverId' for authorization independence, allowing direct rule evaluation.",
+          "params": [
+            {
+              "name": "messageId",
+              "description": "The unique identifier for the message."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure for Haraj Al-Yemen is designed to be secure, scalable, and debuggable by strictly adhering to the core design principles and mandates. \n\n**1. Authorization Independence (CRITICAL):**\n\n*   **User Profiles (`/users/{userId}`):** Authorization is achieved through path-based ownership. The `userId` in the path directly corresponds to `request.auth.uid`, ensuring that no `get()` operations are needed in security rules to determine ownership. Each user's profile document (`UserProfile`) is stored as `/users/{userId}`, where the document ID is the Firebase Authentication UID.\n*   **Public Car Listings (`/carListings/{listingId}`):** Each `CarListing` document explicitly includes the `userId` of the owner. This denormalization allows security rules to check `resource.data.userId == request.auth.uid` for write operations without requiring a `get()` call to any other document. This maintains atomicity and simplifies rules.\n*   **User Car Listing Drafts (`/users/{userId}/carListingDrafts/{draftId}`):** Similar to User Profiles, authorization is path-based. The `{userId}` in the path ensures that only the authenticated user matching that UID can access their own drafts, eliminating the need for `get()` calls.\n*   **Saved Searches (`/users/{userId}/savedSearches/{searchId}`):** Follows the same path-based authorization as drafts, with `{userId}` explicitly defining ownership.\n*   **Messages (`/messages/{messageId}`):** Each `Message` document explicitly contains both `senderId` and `receiverId`. Security rules can directly evaluate `request.auth.uid == resource.data.senderId || request.auth.uid == resource.data.receiverId` for read/write access. This denormalization avoids any `get()` operations for authorization.\n\n**2. Structural Segregation (Homogeneous Security Posture):**\n\n*   **Public vs. Private Listings:** Active, publicly visible car listings are stored in `/carListings/{listingId}`. These documents are designed for broad read access and owner-only write access. In contrast, private `draft` listings are segregated into `/users/{userId}/carListingDrafts/{draftId}`, where they are strictly accessible only by the owning user. This separation simplifies rules; `/carListings` rules only need to check `status: 'active'` for public reads, while `/users/{userId}/carListingDrafts` rules only need to check path-based ownership.\n*   **User-Specific Data:** All user-specific, private data like `UserProfile`, `CarListingDrafts`, and `SavedSearch` entities are nested under `/users/{userId}/`, reinforcing path-based ownership and distinct security postures from public data.\n\n**3. QAPs (Secure List Operations):**\n\n*   **Public Car Listings:** The `/carListings` collection supports secure `list` operations for any user (authenticated or unauthenticated). Rules can efficiently ensure that only `active` listings are returned, as all documents in this collection share the same security posture (publicly readable if active).\n*   **User-Owned Data:** For `/users/{userId}/carListingDrafts` and `/users/{userId}/savedSearches`, `list` operations are implicitly secure. A user can only query their own subcollections by providing their `request.auth.uid` as `{userId}` in the path. This allows the client to retrieve all drafts or saved searches for the current user in a single, secure query.\n*   **Messages:** While not a single "
+  }
+}

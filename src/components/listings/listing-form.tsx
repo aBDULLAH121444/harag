@@ -22,13 +22,12 @@ import { CAR_MAKES, CAR_MODELS, CAR_YEARS, CAR_FEATURES } from '@/lib/constants'
 import { generateCarDescription } from '@/lib/actions';
 import { Wand2, Loader2 } from 'lucide-react';
 import { useState } from 'react';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from "@/hooks/use-toast";
 import { useRouter } from 'next/navigation';
-import { useUser, useFirestore } from '@/firebase';
+import { useUser, useFirestore, FirestorePermissionError, errorEmitter } from '@/firebase';
 import Link from 'next/link';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { FirebaseError } from 'firebase/app';
 
 
 const listingFormSchema = z.object({
@@ -105,7 +104,7 @@ export default function ListingForm() {
     }
   };
 
-  async function onSubmit(data: ListingFormValues) {
+  function onSubmit(data: ListingFormValues) {
     if (!user) {
       toast({ variant: 'destructive', title: 'خطأ', description: 'يجب عليك تسجيل الدخول لإنشاء إعلان.' });
       return;
@@ -116,51 +115,50 @@ export default function ListingForm() {
     }
     setIsSubmitting(true);
     
-    try {
-        const carListingsRef = collection(firestore, 'carListings');
+    const carListingsRef = collection(firestore, 'carListings');
 
-        const carImages = PlaceHolderImages.filter(img => !img.id.startsWith('avatar-'))
-                                             .sort(() => 0.5 - Math.random())
-                                             .slice(0, 3)
-                                             .map(img => img.imageUrl);
+    const carImages = PlaceHolderImages.filter(img => !img.id.startsWith('avatar-'))
+                                          .sort(() => 0.5 - Math.random())
+                                          .slice(0, 3)
+                                          .map(img => img.imageUrl);
 
-        const newListingData = {
-            userId: user.uid,
-            title: `${data.year} ${data.make} ${data.model}`,
-            make: data.make,
-            model: data.model,
-            year: parseInt(data.year, 10),
-            price: parseInt(data.price, 10),
-            currency: 'ريال سعودي',
-            description: data.description,
-            images: carImages,
-            mileage: parseInt(data.mileage, 10),
-            location: data.location,
-            condition: data.condition,
-            features: data.features,
-            status: 'active',
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp(),
-            viewCount: 0,
-        };
+    const newListingData = {
+        userId: user.uid,
+        title: `${data.year} ${data.make} ${data.model}`,
+        make: data.make,
+        model: data.model,
+        year: parseInt(data.year, 10),
+        price: parseInt(data.price, 10),
+        currency: 'ريال سعودي',
+        description: data.description,
+        images: carImages,
+        mileage: parseInt(data.mileage, 10),
+        location: data.location,
+        condition: data.condition,
+        features: data.features,
+        status: 'active',
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        viewCount: 0,
+    };
 
-        await addDoc(carListingsRef, newListingData);
-
+    addDoc(carListingsRef, newListingData)
+      .then(() => {
         toast({ title: 'تم إنشاء القائمة', description: 'تم إنشاء قائمتك بنجاح!' });
         router.push('/dashboard');
-
-    } catch (e) {
-        console.error("Error creating listing:", e);
-        let description = 'حدث خطأ أثناء إنشاء الإعلان. الرجاء معاودة المحاولة.';
-        if (e instanceof FirebaseError) {
-          if (e.code === 'permission-denied') {
-            description = 'ليس لديك الإذن لإنشاء إعلان. تأكد من أنك مسجل الدخول.'
-          }
-        }
-        toast({ variant: 'destructive', title: 'خطأ', description });
-    } finally {
+      })
+      .catch((error) => {
+        const permissionError = new FirestorePermissionError({
+            path: carListingsRef.path,
+            operation: 'create',
+            requestResourceData: newListingData,
+        });
+        errorEmitter.emit('permission-error', permissionError);
+        toast({ variant: 'destructive', title: 'خطأ', description: 'حدث خطأ أثناء إنشاء الإعلان. الرجاء معاودة المحاولة.' });
+      })
+      .finally(() => {
         setIsSubmitting(false);
-    }
+      });
   }
 
   if (isUserLoading) {

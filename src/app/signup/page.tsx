@@ -1,6 +1,7 @@
 'use client';
 import Link from "next/link"
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -11,7 +12,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input"
 import { Car, Loader2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast";
-import { useAuth, useFirestore } from "@/firebase";
+import { useAuth, useFirestore, FirestorePermissionError, errorEmitter } from "@/firebase";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { FirebaseError } from "firebase/app";
@@ -29,20 +30,22 @@ export default function SignupPage() {
     const auth = useAuth();
     const firestore = useFirestore();
     const { toast } = useToast();
+    const [isSubmitting, setIsSubmitting] = useState(false);
     
     const form = useForm<z.infer<typeof signupSchema>>({
         resolver: zodResolver(signupSchema),
         defaultValues: { firstName: "", lastName: "", email: "", password: "" },
     });
     
-    const { formState: { isSubmitting } } = form;
 
     async function onSubmit(values: z.infer<typeof signupSchema>) {
         if (!auth || !firestore) return;
+        setIsSubmitting(true);
 
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
             const user = userCredential.user;
+            const userDocRef = doc(firestore, "users", user.uid);
 
             const fullName = `${values.firstName} ${values.lastName}`;
             await updateProfile(user, {
@@ -50,6 +53,7 @@ export default function SignupPage() {
             });
 
             const userProfile = {
+                id: user.uid,
                 email: user.email,
                 firstName: values.firstName,
                 lastName: values.lastName,
@@ -58,10 +62,19 @@ export default function SignupPage() {
                 updatedAt: serverTimestamp(),
             };
 
-            await setDoc(doc(firestore, "users", user.uid), userProfile);
-
-            toast({ title: "تم إنشاء الحساب بنجاح!" });
-            router.push('/dashboard');
+            setDoc(userDocRef, userProfile)
+                .then(() => {
+                    toast({ title: "تم إنشاء الحساب بنجاح!" });
+                    router.push('/dashboard');
+                })
+                .catch((error) => {
+                    const permissionError = new FirestorePermissionError({ path: userDocRef.path, operation: 'create', requestResourceData: userProfile });
+                    errorEmitter.emit('permission-error', permissionError);
+                    toast({ variant: "destructive", title: "فشل إنشاء الملف الشخصي", description: "حدث خطأ أثناء حفظ بيانات ملفك الشخصي.", });
+                })
+                .finally(() => {
+                    setIsSubmitting(false);
+                });
 
         } catch (error) {
             console.error(error);
@@ -76,6 +89,7 @@ export default function SignupPage() {
                 title: "فشل إنشاء الحساب",
                 description,
             });
+            setIsSubmitting(false);
         }
     }
 

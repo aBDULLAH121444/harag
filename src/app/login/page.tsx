@@ -108,6 +108,8 @@ export default function LoginPage() {
                     description = "تم إغلاق نافذة تسجيل الدخول. يرجى المحاولة مرة أخرى.";
                 } else if (error.code === 'auth/account-exists-with-different-credential') {
                     description = "يوجد حساب بالفعل بهذا البريد الإلكتروني ولكن ببيانات اعتماد مختلفة.";
+                } else if (error.code === 'auth/operation-not-allowed') {
+                    description = "تسجيل الدخول عبر جوجل غير مفعّل. يرجى تفعيله في لوحة تحكم Firebase.";
                 }
             }
             toast({ variant: "destructive", title: "فشل تسجيل الدخول", description, });
@@ -188,5 +190,3 @@ export default function LoginPage() {
     </div>
   )
 }
-
-    

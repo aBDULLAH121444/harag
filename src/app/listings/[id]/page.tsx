@@ -30,11 +30,11 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
                     <CarouselItem key={index}>
                         <div className="aspect-video relative">
                             <Image
-                                src={img.url}
+                                src={img.imageUrl}
                                 alt={`${car.make} ${car.model} image ${index + 1}`}
                                 fill
                                 className="object-cover"
-                                data-ai-hint={img.hint}
+                                data-ai-hint={img.imageHint}
                                 priority={index === 0}
                             />
                         </div>

@@ -1,3 +1,5 @@
+import type { ImagePlaceholder } from './placeholder-images';
+
 export type Car = {
   id: string;
   make: string;
@@ -8,7 +10,7 @@ export type Car = {
   location: string;
   description: string;
   features: string[];
-  images: { id: string; url: string; hint: string }[];
+  images: ImagePlaceholder[];
   seller: {
     name: string;
     avatarId: string;

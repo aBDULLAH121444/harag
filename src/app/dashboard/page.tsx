@@ -4,7 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { getUserListings } from "@/lib/data";
-import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash2, Car as CarIcon } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { arSA } from "date-fns/locale";
@@ -44,17 +44,25 @@ export default function DashboardPage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {userListings.map(listing => (
+                            {userListings.map(listing => {
+                                const firstImage = listing.images?.[0];
+                                return (
                                 <TableRow key={listing.id}>
                                     <TableCell className="hidden sm:table-cell">
-                                        <Image
-                                            alt={`${listing.make} ${listing.model}`}
-                                            className="aspect-square rounded-md object-cover"
-                                            height="64"
-                                            src={listing.images[0].url}
-                                            width="64"
-                                            data-ai-hint={listing.images[0].hint}
-                                        />
+                                        {firstImage ? (
+                                            <Image
+                                                alt={`${listing.make} ${listing.model}`}
+                                                className="aspect-square rounded-md object-cover"
+                                                height="64"
+                                                src={firstImage.imageUrl}
+                                                width="64"
+                                                data-ai-hint={firstImage.imageHint}
+                                            />
+                                        ) : (
+                                            <div className="aspect-square h-16 w-16 rounded-md bg-muted flex items-center justify-center">
+                                                <CarIcon className="w-8 h-8 text-muted-foreground" />
+                                            </div>
+                                        )}
                                     </TableCell>
                                     <TableCell className="font-medium">
                                         <div className="font-bold">{listing.year} {listing.make} {listing.model}</div>
@@ -81,7 +89,7 @@ export default function DashboardPage() {
                                         </DropdownMenu>
                                     </TableCell>
                                 </TableRow>
-                            ))}
+                            )})}
                         </TableBody>
                     </Table>
                 </CardContent>

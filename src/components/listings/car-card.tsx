@@ -3,7 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Gauge, MapPin, Calendar, Tag } from 'lucide-react';
+import { Gauge, MapPin, Calendar, Tag, Car as CarIcon } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { arSA } from 'date-fns/locale';
 
@@ -12,20 +12,26 @@ type CarCardProps = {
 };
 
 export default function CarCard({ car }: CarCardProps) {
-  const firstImage = car.images[0];
+  const firstImage = car.images?.[0];
 
   return (
     <Link href={`/listings/${car.id}`} className="group">
       <Card className="h-full flex flex-col overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
         <CardHeader className="p-0 relative">
-          <Image
-            src={firstImage.url}
-            alt={`${car.make} ${car.model}`}
-            width={600}
-            height={400}
-            className="aspect-video object-cover"
-            data-ai-hint={firstImage.hint}
-          />
+          {firstImage ? (
+            <Image
+              src={firstImage.imageUrl}
+              alt={`${car.make} ${car.model}`}
+              width={600}
+              height={400}
+              className="aspect-video object-cover"
+              data-ai-hint={firstImage.imageHint}
+            />
+          ) : (
+            <div className="aspect-video bg-muted flex items-center justify-center">
+              <CarIcon className="w-12 h-12 text-muted-foreground" />
+            </div>
+          )}
           <Badge variant="secondary" className="absolute top-2 left-2">{car.condition}</Badge>
         </CardHeader>
         <CardContent className="flex-grow p-4">

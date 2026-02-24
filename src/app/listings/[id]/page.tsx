@@ -11,8 +11,8 @@ import { format, formatDistanceToNow } from 'date-fns';
 import { arSA } from 'date-fns/locale';
 import { Tag, Gauge, MapPin, Calendar, Wrench, CheckCircle, MessageSquare } from 'lucide-react';
 
-export default function ListingDetailPage({ params }: { params: { id: string } }) {
-  const car = getListingById(params.id);
+export default async function ListingDetailPage({ params }: { params: { id: string } }) {
+  const car = await getListingById(params.id);
 
   if (!car) {
     notFound();

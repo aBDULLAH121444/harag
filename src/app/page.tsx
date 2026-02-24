@@ -2,7 +2,7 @@ import { getListings } from '@/lib/data';
 import CarCard from '@/components/listings/car-card';
 import FilterBar from '@/components/listings/filter-bar';
 
-export default function Home({
+export default async function Home({
   searchParams,
 }: {
   searchParams?: {
@@ -12,7 +12,7 @@ export default function Home({
     maxPrice?: string;
   };
 }) {
-  const listings = getListings(searchParams);
+  const listings = await getListings(searchParams);
 
   return (
     <div className="container mx-auto px-4 py-8">

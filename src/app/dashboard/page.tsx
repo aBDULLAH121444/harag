@@ -1,17 +1,63 @@
+'use client'; // Make it a client component
+
+import { useState, useEffect } from 'react';
+import { useUser } from '@/firebase'; // Use our new hook
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { getUserListings } from "@/lib/data";
-import { MoreHorizontal, Pencil, Trash2, Car as CarIcon } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash2, Car as CarIcon, Loader2 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { arSA } from "date-fns/locale";
 import { format } from "date-fns";
+import type { Car } from '@/lib/types'; // Import Car type
 
 export default function DashboardPage() {
-    const userListings = getUserListings('current-user-id'); // ID is mocked in the function
+    const { user, isUserLoading } = useUser();
+    const [userListings, setUserListings] = useState<Car[]>([]);
+    const [isLoadingListings, setIsLoadingListings] = useState(true);
+
+    useEffect(() => {
+        if (user) {
+            setIsLoadingListings(true);
+            getUserListings(user.uid)
+                .then(listings => {
+                    setUserListings(listings);
+                    setIsLoadingListings(false);
+                })
+                .catch(error => {
+                    console.error("Error fetching user listings:", error);
+                    setIsLoadingListings(false);
+                });
+        } else if (!isUserLoading) {
+            // Not logged in
+            setIsLoadingListings(false);
+            setUserListings([]);
+        }
+    }, [user, isUserLoading]);
+
+    if (isUserLoading || isLoadingListings) {
+        return (
+            <div className="container mx-auto px-4 py-12 flex justify-center items-center min-h-[calc(100vh-20rem)]">
+                <Loader2 className="h-16 w-16 animate-spin text-primary" />
+            </div>
+        );
+    }
+    
+    if (!user) {
+        return (
+             <div className="container mx-auto px-4 py-12 text-center">
+                <h1 className="text-3xl font-bold">يرجى تسجيل الدخول</h1>
+                <p className="text-muted-foreground mt-2">يجب عليك تسجيل الدخول لعرض لوحة التحكم الخاصة بك.</p>
+                <Button asChild className="mt-4">
+                    <Link href="/login">تسجيل الدخول</Link>
+                </Button>
+            </div>
+        )
+    }
 
     return (
         <div className="container mx-auto px-4 py-12">
@@ -26,10 +72,18 @@ export default function DashboardPage() {
             
             <Card>
                 <CardHeader>
-                    <CardTitle>قوائمي النشطة</CardTitle>
-                    <CardDescription>لديك {userListings.length} من القوائم النشطة.</CardDescription>
+                    <CardTitle>قوائمي</CardTitle>
+                    <CardDescription>لديك {userListings.length} من القوائم.</CardDescription>
                 </CardHeader>
                 <CardContent>
+                    {userListings.length === 0 ? (
+                        <div className="text-center py-10">
+                            <p className="text-muted-foreground">لم تقم بإضافة أي قوائم حتى الآن.</p>
+                             <Button asChild className="mt-4">
+                                <Link href="/sell">إنشاء قائمة جديدة</Link>
+                            </Button>
+                        </div>
+                    ) : (
                     <Table>
                         <TableHeader>
                             <TableRow>
@@ -83,7 +137,7 @@ export default function DashboardPage() {
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="end">
                                             <DropdownMenuLabel>الإجراءات</DropdownMenuLabel>
-                                            <DropdownMenuItem asChild><Link href="/sell" className="flex items-center"><Pencil className="ml-2 h-4 w-4"/> تعديل</Link></DropdownMenuItem>
+                                            <DropdownMenuItem asChild><Link href={`/sell?edit=${listing.id}`} className="flex items-center"><Pencil className="ml-2 h-4 w-4"/> تعديل</Link></DropdownMenuItem>
                                             <DropdownMenuItem className="text-red-600 focus:text-red-600 flex items-center"><Trash2 className="ml-2 h-4 w-4"/> حذف</DropdownMenuItem>
                                         </DropdownMenuContent>
                                         </DropdownMenu>
@@ -92,6 +146,7 @@ export default function DashboardPage() {
                             )})}
                         </TableBody>
                     </Table>
+                    )}
                 </CardContent>
             </Card>
         </div>

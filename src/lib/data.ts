@@ -1,173 +1,129 @@
+import { collection, getDocs, getDoc, doc, query, where, orderBy, Timestamp, Firestore } from 'firebase/firestore';
+import { getFirebaseServerServices } from '@/firebase/server';
 import type { Car } from './types';
 import { PlaceHolderImages } from './placeholder-images';
 
-const CAR_DESCRIPTIONS = [
-  "هذه السيارة النقية هي مزيج مثالي من الأناقة والأداء. مع عدد قليل من الأميال وتاريخ خدمة كامل، إنها جاهزة لمغامرتها التالية. لا تفوت هذه الصفقة المذهلة.",
-  "سيارة موثوقة وفعالة في استهلاك الوقود، مثالية للقيادة في المدينة والرحلات الطويلة على حد سواء. تمت صيانتها بدقة وتأتي مع مجموعة من الميزات الحديثة لراحتك وسلامتك.",
-  "جرب الفخامة والقوة مع هذا الطراز الأعلى من نوعه. تصميمها المذهل يضاهيه تجربة قيادة مثيرة. تأتي محملة بالكامل بجميع الإضافات الاختيارية.",
-  "السيارة العائلية المثالية، توفر مساحات داخلية واسعة وتقييمات أمان من الدرجة الأولى. لقد خدمت عائلتنا جيدًا وتبحث عن منزل جديد. في حالة ممتازة، من الداخل والخارج."
-];
+// Helper function to convert a Firestore document to a Car object
+function docToCar(docSnap: any): Car {
+    const data = docSnap.data();
+    const images = (data.images || []).map((url: string, index: number) => {
+        // Attempt to find a matching placeholder image to retain hints
+        const found = PlaceHolderImages.find(p => p.imageUrl === url);
+        if (found) return found;
+        
+        // If not found, create a fallback placeholder
+        return {
+            id: `fb-img-${docSnap.id}-${index}`,
+            imageUrl: url,
+            description: `${data.make} ${data.model}`,
+            imageHint: `${data.make.toLowerCase()} ${data.model.toLowerCase()}`
+        };
+    });
 
-const locations = ["صنعاء", "عدن", "تعز", "الحديدة", "إب", "المكلا"];
+    return {
+        id: docSnap.id,
+        userId: data.userId,
+        make: data.make,
+        model: data.model,
+        year: data.year,
+        price: data.price,
+        mileage: data.mileage,
+        location: data.location,
+        description: data.description,
+        features: data.features || [],
+        images: images,
+        seller: {
+            name: data.sellerName || 'مستخدم غير معروف',
+            // The UI expects an avatarId for the placeholder lookup.
+            // This is a simplification. In a real app, this would be a URL from the user profile.
+            avatarId: 'avatar-1' 
+        },
+        postedAt: (data.createdAt as Timestamp)?.toDate() || new Date(),
+        condition: data.condition,
+    };
+}
 
-const cars: Car[] = [
-  {
-    id: '1',
-    make: 'تويوتا',
-    model: 'لاند كروزر',
-    year: 2022,
-    price: 250000,
-    mileage: 15000,
-    location: locations[0],
-    description: CAR_DESCRIPTIONS[0],
-    features: ['فتحة سقف', 'مقاعد جلد', 'نظام ملاحة', 'دفع رباعي'],
-    images: PlaceHolderImages.filter(img => img.id.startsWith('car-')),
-    seller: { name: 'أحمد علي', avatarId: 'avatar-1' },
-    postedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
-    condition: 'شبه جديد',
-  },
-  {
-    id: '2',
-    make: 'هيونداي',
-    model: 'إلنترا',
-    year: 2021,
-    price: 85000,
-    mileage: 45000,
-    location: locations[1],
-    description: CAR_DESCRIPTIONS[1],
-    features: ['كاميرا خلفية', 'بلوتوث', 'مثبت سرعة'],
-    images: PlaceHolderImages.filter(img => img.id.startsWith('car-')).reverse(),
-    seller: { name: 'فاطمة صالح', avatarId: 'avatar-2' },
-    postedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
-    condition: 'جيد',
-  },
-  {
-    id: '3',
-    make: 'فورد',
-    model: 'إكسبلورر',
-    year: 2020,
-    price: 150000,
-    mileage: 60000,
-    location: locations[2],
-    description: CAR_DESCRIPTIONS[3],
-    features: ['جنوط ألمنيوم', 'بلوتوث', 'كاميرا خلفية'],
-    images: [PlaceHolderImages[2], PlaceHolderImages[3], PlaceHolderImages[4]],
-    seller: { name: 'أحمد علي', avatarId: 'avatar-1' },
-    postedAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), // 10 days ago
-    condition: 'جيد',
-  },
-  {
-    id: '4',
-    make: 'مرسيدس بنز',
-    model: 'الفئة E',
-    year: 2023,
-    price: 320000,
-    mileage: 5000,
-    location: locations[0],
-    description: CAR_DESCRIPTIONS[2],
-    features: ['فتحة سقف', 'مقاعد جلد', 'نظام ملاحة', 'مثبت سرعة'],
-    images: [PlaceHolderImages[4], PlaceHolderImages[5], PlaceHolderImages[6]],
-    seller: { name: 'فاطمة صالح', avatarId: 'avatar-2' },
-    postedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
-    condition: 'جديد',
-  },
-    {
-    id: '5',
-    make: 'تويوتا',
-    model: 'كامري',
-    year: 2019,
-    price: 95000,
-    mileage: 80000,
-    location: locations[3],
-    description: CAR_DESCRIPTIONS[1],
-    features: ['كاميرا خلفية', 'بلوتوث', 'جنوط ألمنيوم'],
-    images: [PlaceHolderImages[1], PlaceHolderImages[7], PlaceHolderImages[0]],
-    seller: { name: 'أحمد علي', avatarId: 'avatar-1' },
-    postedAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000), // 14 days ago
-    condition: 'جيد',
-  },
-  {
-    id: '6',
-    make: 'نيسان',
-    model: 'باترول',
-    year: 2021,
-    price: 220000,
-    mileage: 35000,
-    location: locations[4],
-    description: CAR_DESCRIPTIONS[0],
-    features: ['دفع رباعي', 'نظام ملاحة', 'فتحة سقف'],
-    images: [PlaceHolderImages[3], PlaceHolderImages[1], PlaceHolderImages[5]],
-    seller: { name: 'فاطمة صالح', avatarId: 'avatar-2' },
-    postedAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000), // 8 days ago
-    condition: 'شبه جديد',
-  },
-  {
-    id: '7',
-    make: 'بي إم دبليو',
-    model: 'X5',
-    year: 2020,
-    price: 280000,
-    mileage: 55000,
-    location: locations[5],
-    description: CAR_DESCRIPTIONS[2],
-    features: ['مقاعد جلد', 'فتحة سقف', 'دفع رباعي', 'نظام ملاحة'],
-    images: [PlaceHolderImages[5], PlaceHolderImages[6], PlaceHolderImages[7]],
-    seller: { name: 'أحمد علي', avatarId: 'avatar-1' },
-    postedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
-    condition: 'جيد',
-  },
-  {
-    id: '8',
-    make: 'كيا',
-    model: 'سبورتاج',
-    year: 2022,
-    price: 110000,
-    mileage: 25000,
-    location: locations[1],
-    description: CAR_DESCRIPTIONS[3],
-    features: ['كاميرا خلفية', 'جنوط ألمنيوم', 'بلوتوث'],
-    images: [PlaceHolderImages[7], PlaceHolderImages[0], PlaceHolderImages[2]],
-    seller: { name: 'فاطمة صالح', avatarId: 'avatar-2' },
-    postedAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000), // 20 days ago
-    condition: 'شبه جديد',
-  },
-];
-
-export function getListings(filters?: {
+export async function getListings(filters?: {
     make?: string;
     model?: string;
     year?: string;
     maxPrice?: string;
-  }) {
-    if (!filters || Object.keys(filters).length === 0) {
-      return cars;
+  }): Promise<Car[]> {
+    const { firestore: db } = getFirebaseServerServices();
+    const carListingsRef = collection(db, 'carListings');
+    
+    let q = query(carListingsRef, where('status', '==', 'active'), orderBy('createdAt', 'desc'));
+
+    // Apply filters if they exist
+    if (filters) {
+        if (filters.make) {
+            q = query(q, where('make', '==', filters.make));
+        }
+        if (filters.model) {
+            q = query(q, where('model', '==', filters.model));
+        }
+        if (filters.year && !isNaN(parseInt(filters.year))) {
+            q = query(q, where('year', '==', parseInt(filters.year, 10)));
+        }
+        if (filters.maxPrice && !isNaN(parseInt(filters.maxPrice))) {
+            q = query(q, where('price', '<=', parseInt(filters.maxPrice, 10)));
+        }
     }
+
+    try {
+        const snapshot = await getDocs(q);
+        return snapshot.docs.map(docToCar);
+    } catch (e) {
+        console.error("Error getting listings: ", e);
+        // This can happen if Firestore indexes are not set up.
+        // Return an empty array to prevent the page from crashing.
+        return [];
+    }
+}
+
+export async function getListingById(id: string): Promise<Car | undefined> {
+  const { firestore: db } = getFirebaseServerServices();
+  if (!id) return undefined;
   
-    return cars.filter(car => {
-      if (filters.make && car.make !== filters.make) {
-        return false;
-      }
-      if (filters.model && car.model !== filters.model) {
-        return false;
-      }
-      if (filters.year && car.year.toString() !== filters.year) {
-        return false;
-      }
-      if (filters.maxPrice && car.price > parseInt(filters.maxPrice, 10)) {
-        return false;
-      }
-      return true;
-    });
+  const docRef = doc(db, 'carListings', id);
+  const docSnap = await getDoc(docRef);
+
+  if (docSnap.exists()) {
+    const car = docToCar(docSnap);
+    
+    // Attempt to fetch seller's profile for more details
+    try {
+        const userProfileSnap = await getDoc(doc(db, 'users', car.userId));
+        if (userProfileSnap.exists()) {
+            const userData = userProfileSnap.data();
+            car.seller.name = `${userData.firstName} ${userData.lastName}`.trim() || userData.username;
+            // Here you could map a real avatar URL if the UserProfile and Car types were updated.
+            // Sticking to avatarId for now to avoid breaking UI components.
+        }
+    } catch (e) {
+        console.error(`Failed to fetch user profile for ${car.userId}:`, e);
+    }
+    
+    return car;
+  } else {
+    return undefined; // Not found
+  }
 }
 
-export function getListingById(id: string) {
-  return cars.find(car => car.id === id);
-}
+export async function getUserListings(userId: string): Promise<Car[]> {
+    const { firestore: db } = getFirebaseServerServices();
+    if (!userId) return [];
+    
+    const carListingsRef = collection(db, 'carListings');
+    const q = query(carListingsRef, where('userId', '==', userId), orderBy('createdAt', 'desc'));
 
-export function getUserListings(userId: string) {
-    // In a real app, userId would be used to filter.
-    // Here we'll just return listings from a specific seller.
-    return cars.filter(car => car.seller.name === 'أحمد علي');
+    try {
+        const snapshot = await getDocs(q);
+        return snapshot.docs.map(docToCar);
+    } catch (e) {
+        console.error(`Error getting listings for user ${userId}:`, e);
+        return [];
+    }
 }
 
 export function getImageById(id: string) {

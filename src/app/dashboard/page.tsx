@@ -1,45 +1,78 @@
-'use client'; // Make it a client component
+'use client';
 
-import { useState, useEffect } from 'react';
-import { useUser } from '@/firebase'; // Use our new hook
+import { useMemo } from 'react';
+import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { collection, query, where, Timestamp } from 'firebase/firestore';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { getUserListings } from "@/lib/data";
 import { MoreHorizontal, Pencil, Trash2, Car as CarIcon, Loader2 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { arSA } from "date-fns/locale";
 import { format } from "date-fns";
-import type { Car } from '@/lib/types'; // Import Car type
+import type { Car } from '@/lib/types';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 export default function DashboardPage() {
     const { user, isUserLoading } = useUser();
-    const [userListings, setUserListings] = useState<Car[]>([]);
-    const [isLoadingListings, setIsLoadingListings] = useState(true);
+    const firestore = useFirestore();
 
-    useEffect(() => {
-        if (user) {
-            setIsLoadingListings(true);
-            getUserListings(user.uid)
-                .then(listings => {
-                    setUserListings(listings);
-                    setIsLoadingListings(false);
-                })
-                .catch(error => {
-                    console.error("Error fetching user listings:", error);
-                    setIsLoadingListings(false);
-                });
-        } else if (!isUserLoading) {
-            // Not logged in
-            setIsLoadingListings(false);
-            setUserListings([]);
-        }
-    }, [user, isUserLoading]);
+    const userListingsQuery = useMemoFirebase(() => {
+        if (!user || !firestore) return null;
+        return query(collection(firestore, 'carListings'), where('userId', '==', user.uid));
+    }, [user, firestore]);
+    
+    const { data: rawListings, isLoading: isLoadingListings, error } = useCollection(userListingsQuery);
+    
+    const userListings = useMemo(() => {
+      if (!rawListings) return [];
 
-    if (isUserLoading || isLoadingListings) {
+      const listings: Car[] = rawListings.map((data: any) => {
+        const images = (data.images || []).map((url: string, index: number) => {
+            const found = PlaceHolderImages.find(p => p.imageUrl === url);
+            if (found) return found;
+            
+            return {
+                id: `fb-img-${data.id}-${index}`,
+                imageUrl: url,
+                description: `${data.make} ${data.model}`,
+                imageHint: `${data.make.toLowerCase()} ${data.model.toLowerCase()}`
+            };
+        });
+
+        return {
+            id: data.id,
+            userId: data.userId,
+            make: data.make,
+            model: data.model,
+            year: data.year,
+            price: data.price,
+            mileage: data.mileage,
+            location: data.location,
+            description: data.description,
+            features: data.features || [],
+            images: images,
+            seller: {
+                name: user?.displayName || 'مستخدم غير معروف',
+                avatarId: 'avatar-1' 
+            },
+            postedAt: (data.createdAt as Timestamp)?.toDate() || new Date(),
+            condition: data.condition,
+        };
+      });
+      
+      listings.sort((a, b) => b.postedAt.getTime() - a.postedAt.getTime());
+      return listings;
+    }, [rawListings, user]);
+
+    if (error) {
+        console.error("Error fetching user listings:", error);
+    }
+    
+    if (isUserLoading || (user && isLoadingListings)) {
         return (
             <div className="container mx-auto px-4 py-12 flex justify-center items-center min-h-[calc(100vh-20rem)]">
                 <Loader2 className="h-16 w-16 animate-spin text-primary" />

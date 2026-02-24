@@ -15,10 +15,10 @@ export default function FilterBar() {
         <CardContent className="p-4">
             <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
                 <div className="md:col-span-1">
-                    <label className="text-sm font-medium text-muted-foreground">Make</label>
+                    <label className="text-sm font-medium text-muted-foreground">الشركة المصنعة</label>
                     <Select onValueChange={setSelectedMake}>
                         <SelectTrigger>
-                        <SelectValue placeholder="Select Make" />
+                        <SelectValue placeholder="اختر الشركة" />
                         </SelectTrigger>
                         <SelectContent>
                         {CAR_MAKES.map((make) => (
@@ -30,10 +30,10 @@ export default function FilterBar() {
                     </Select>
                 </div>
                 <div className="md:col-span-1">
-                     <label className="text-sm font-medium text-muted-foreground">Model</label>
+                     <label className="text-sm font-medium text-muted-foreground">الموديل</label>
                     <Select disabled={!selectedMake}>
                         <SelectTrigger>
-                        <SelectValue placeholder="Select Model" />
+                        <SelectValue placeholder="اختر الموديل" />
                         </SelectTrigger>
                         <SelectContent>
                         {selectedMake && CAR_MODELS[selectedMake]?.map((model) => (
@@ -45,10 +45,10 @@ export default function FilterBar() {
                     </Select>
                 </div>
                 <div className="md:col-span-1">
-                     <label className="text-sm font-medium text-muted-foreground">Year</label>
+                     <label className="text-sm font-medium text-muted-foreground">السنة</label>
                     <Select>
                         <SelectTrigger>
-                        <SelectValue placeholder="Select Year" />
+                        <SelectValue placeholder="اختر السنة" />
                         </SelectTrigger>
                         <SelectContent>
                         {CAR_YEARS.map((year) => (
@@ -60,23 +60,23 @@ export default function FilterBar() {
                     </Select>
                 </div>
                 <div className="md:col-span-1">
-                     <label className="text-sm font-medium text-muted-foreground">Max Price</label>
+                     <label className="text-sm font-medium text-muted-foreground">أعلى سعر</label>
                     <Select>
                         <SelectTrigger>
-                        <SelectValue placeholder="Any Price" />
+                        <SelectValue placeholder="أي سعر" />
                         </SelectTrigger>
                         <SelectContent>
                         {[50000, 75000, 100000, 150000, 200000, 300000].map((price) => (
                             <SelectItem key={price} value={String(price)}>
-                            {price.toLocaleString()} SAR
+                            {price.toLocaleString()} ريال سعودي
                             </SelectItem>
                         ))}
                         </SelectContent>
                     </Select>
                 </div>
                 <Button className="w-full">
-                    <Search className="mr-2 h-4 w-4" />
-                    Search
+                    <Search className="ml-2 h-4 w-4" />
+                    بحث
                 </Button>
             </div>
         </CardContent>

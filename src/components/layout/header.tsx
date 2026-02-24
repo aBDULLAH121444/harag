@@ -9,25 +9,25 @@ export function Header() {
         <Link href="/" className="flex items-center gap-2">
           <Car className="h-8 w-8 text-primary" />
           <span className="text-xl font-bold text-primary font-headline tracking-tight">
-            Haraj Al-Yemen
+            حراج اليمن
           </span>
         </Link>
         <nav className="flex items-center gap-4">
           <Button variant="ghost" asChild>
-            <Link href="/dashboard">Dashboard</Link>
+            <Link href="/dashboard">لوحة التحكم</Link>
           </Button>
           <Button asChild className="bg-accent hover:bg-accent/90 text-accent-foreground">
             <Link href="/sell">
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Sell Your Car
+              <PlusCircle className="ml-2 h-4 w-4" />
+              بع سيارتك
             </Link>
           </Button>
           <div className="hidden md:flex items-center gap-2">
              <Button variant="outline" asChild>
-                <Link href="/login">Login</Link>
+                <Link href="/login">تسجيل الدخول</Link>
              </Button>
              <Button asChild>
-                <Link href="/signup">Sign Up</Link>
+                <Link href="/signup">إنشاء حساب</Link>
              </Button>
           </div>
         </nav>

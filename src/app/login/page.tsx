@@ -20,15 +20,15 @@ export default function LoginPage() {
             <Link href="/" className="flex items-center justify-center gap-2 mb-4">
                 <Car className="h-10 w-10 text-primary" />
             </Link>
-          <CardTitle className="text-2xl font-headline">Login</CardTitle>
+          <CardTitle className="text-2xl font-headline">تسجيل الدخول</CardTitle>
           <CardDescription>
-            Enter your email below to login to your account
+            أدخل بريدك الإلكتروني أدناه لتسجيل الدخول إلى حسابك
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">البريد الإلكتروني</Label>
               <Input
                 id="email"
                 type="email"
@@ -38,24 +38,24 @@ export default function LoginPage() {
             </div>
             <div className="grid gap-2">
               <div className="flex items-center">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">كلمة المرور</Label>
                 <Link
                   href="#"
-                  className="ml-auto inline-block text-sm underline"
+                  className="mr-auto inline-block text-sm underline"
                 >
-                  Forgot your password?
+                  هل نسيت كلمة المرور؟
                 </Link>
               </div>
               <Input id="password" type="password" required />
             </div>
             <Button type="submit" className="w-full">
-              Login
+              تسجيل الدخول
             </Button>
           </div>
           <div className="mt-4 text-center text-sm">
-            Don&apos;t have an account?{" "}
+            ليس لديك حساب؟{" "}
             <Link href="/signup" className="underline">
-              Sign up
+              إنشاء حساب
             </Link>
           </div>
         </CardContent>

@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/componen
 import { Badge } from '@/components/ui/badge';
 import { Gauge, MapPin, Calendar, Tag } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { arSA } from 'date-fns/locale';
 
 type CarCardProps = {
   car: Car;
@@ -25,7 +26,7 @@ export default function CarCard({ car }: CarCardProps) {
             className="aspect-video object-cover"
             data-ai-hint={firstImage.hint}
           />
-          <Badge variant="secondary" className="absolute top-2 right-2">{car.condition}</Badge>
+          <Badge variant="secondary" className="absolute top-2 left-2">{car.condition}</Badge>
         </CardHeader>
         <CardContent className="flex-grow p-4">
           <CardTitle className="text-lg font-bold truncate group-hover:text-primary transition-colors">
@@ -34,11 +35,11 @@ export default function CarCard({ car }: CarCardProps) {
           <div className="mt-2 text-sm text-muted-foreground space-y-2">
             <div className="flex items-center gap-2">
               <Tag className="w-4 h-4 text-accent" />
-              <span className="font-semibold text-base text-primary">{car.price.toLocaleString()} SAR</span>
+              <span className="font-semibold text-base text-primary">{car.price.toLocaleString()} ريال سعودي</span>
             </div>
             <div className="flex items-center gap-2">
               <Gauge className="w-4 h-4" />
-              <span>{car.mileage.toLocaleString()} km</span>
+              <span>{car.mileage.toLocaleString()} كم</span>
             </div>
             <div className="flex items-center gap-2">
               <MapPin className="w-4 h-4" />
@@ -48,8 +49,8 @@ export default function CarCard({ car }: CarCardProps) {
         </CardContent>
         <CardFooter className="p-4 pt-0 text-xs text-muted-foreground">
             <div className="flex items-center gap-1">
-                <Calendar className="w-3 h-3" />
-                <span>Posted {formatDistanceToNow(car.postedAt, { addSuffix: true })}</span>
+                <Calendar className="w-3 h-3 ml-1" />
+                <span>نشرت {formatDistanceToNow(car.postedAt, { addSuffix: true, locale: arSA })}</span>
             </div>
         </CardFooter>
       </Card>

@@ -20,19 +20,19 @@ export default function SignupPage() {
              <Link href="/" className="flex items-center justify-center gap-2 mb-4">
                 <Car className="h-10 w-10 text-primary" />
             </Link>
-            <CardTitle className="text-2xl font-headline">Sign Up</CardTitle>
+            <CardTitle className="text-2xl font-headline">إنشاء حساب</CardTitle>
             <CardDescription>
-                Enter your information to create an account
+                أدخل معلوماتك لإنشاء حساب
             </CardDescription>
         </CardHeader>
         <CardContent>
             <div className="grid gap-4">
             <div className="grid gap-2">
-                <Label htmlFor="full-name">Full name</Label>
-                <Input id="full-name" placeholder="Ahmed Ali" required />
+                <Label htmlFor="full-name">الاسم الكامل</Label>
+                <Input id="full-name" placeholder="أحمد علي" required />
             </div>
             <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">البريد الإلكتروني</Label>
                 <Input
                 id="email"
                 type="email"
@@ -41,17 +41,17 @@ export default function SignupPage() {
                 />
             </div>
             <div className="grid gap-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">كلمة المرور</Label>
                 <Input id="password" type="password" />
             </div>
             <Button type="submit" className="w-full">
-                Create an account
+                إنشاء حساب
             </Button>
             </div>
             <div className="mt-4 text-center text-sm">
-            Already have an account?{" "}
+            هل لديك حساب بالفعل؟{" "}
             <Link href="/login" className="underline">
-                Login
+                تسجيل الدخول
             </Link>
             </div>
         </CardContent>

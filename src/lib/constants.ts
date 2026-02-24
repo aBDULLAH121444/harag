@@ -1,21 +1,21 @@
 export const CAR_MAKES = [
-  "Toyota",
-  "Hyundai",
-  "Ford",
-  "Mercedes-Benz",
-  "BMW",
-  "Nissan",
-  "Kia",
+  "تويوتا",
+  "هيونداي",
+  "فورد",
+  "مرسيدس بنز",
+  "بي إم دبليو",
+  "نيسان",
+  "كيا",
 ];
 
 export const CAR_MODELS: { [key: string]: string[] } = {
-  Toyota: ["Camry", "Corolla", "Land Cruiser", "Hilux", "RAV4"],
-  Hyundai: ["Elantra", "Sonata", "Tucson", "Santa Fe", "Accent"],
-  Ford: ["Explorer", "Taurus", "Expedition", "F-150"],
-  "Mercedes-Benz": ["C-Class", "E-Class", "S-Class", "G-Class"],
-  BMW: ["3 Series", "5 Series", "7 Series", "X5", "X7"],
-  Nissan: ["Sunny", "Patrol", "Altima", "Maxima"],
-  Kia: ["Cerato", "Optima", "Sportage", "Sorento"],
+  "تويوتا": ["كامري", "كورولا", "لاند كروزر", "هايلكس", "راف 4"],
+  "هيونداي": ["إلنترا", "سوناتا", "توسان", "سنتافي", "أكسنت"],
+  "فورد": ["إكسبلورر", "توروس", "إكسبيديشن", "إف-150"],
+  "مرسيدس بنز": ["الفئة C", "الفئة E", "الفئة S", "الفئة G"],
+  "بي إم دبليو": ["الفئة 3", "الفئة 5", "الفئة 7", "X5", "X7"],
+  "نيسان": ["صني", "باترول", "ألتيما", "ماكسيما"],
+  "كيا": ["سيراتو", "أوبتيما", "سبورتاج", "سورينتو"],
 };
 
 export const CAR_YEARS = Array.from(
@@ -24,12 +24,12 @@ export const CAR_YEARS = Array.from(
 );
 
 export const CAR_FEATURES = [
-    "Sunroof",
-    "Leather Seats",
-    "Navigation System",
-    "Backup Camera",
-    "Bluetooth",
-    "Alloy Wheels",
-    "4x4",
-    "Cruise Control"
+    "فتحة سقف",
+    "مقاعد جلد",
+    "نظام ملاحة",
+    "كاميرا خلفية",
+    "بلوتوث",
+    "جنوط ألمنيوم",
+    "دفع رباعي",
+    "مثبت سرعة"
 ];

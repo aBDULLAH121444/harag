@@ -14,5 +14,5 @@ export type Car = {
     avatarId: string;
   };
   postedAt: Date;
-  condition: 'New' | 'Like New' | 'Good' | 'Fair';
+  condition: 'جديد' | 'شبه جديد' | 'جيد' | 'مقبول';
 };

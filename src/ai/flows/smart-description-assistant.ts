@@ -11,19 +11,19 @@ import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 
 const SmartDescriptionAssistantInputSchema = z.object({
-  make: z.string().describe('The make of the car (e.g., Toyota).'),
-  model: z.string().describe('The model of the car (e.g., Camry).'),
-  year: z.number().int().min(1900).max(new Date().getFullYear() + 1).describe('The manufacturing year of the car.'),
-  mileage: z.number().int().min(0).describe('The total mileage of the car.'),
-  price: z.number().min(0).describe('The asking price for the car.'),
-  condition: z.string().describe('The overall condition of the car (e.g., Excellent, Good, Fair).'),
-  features: z.array(z.string()).describe('A list of key features of the car (e.g., Sunroof, Leather seats, Navigation).'),
-  sellerNotes: z.string().optional().describe('Any additional notes or highlights from the seller.'),
+  make: z.string().describe('الشركة المصنعة للسيارة (مثال: تويوتا).'),
+  model: z.string().describe('موديل السيارة (مثال: كامري).'),
+  year: z.number().int().min(1900).max(new Date().getFullYear() + 1).describe('سنة تصنيع السيارة.'),
+  mileage: z.number().int().min(0).describe('المسافة الإجمالية التي قطعتها السيارة.'),
+  price: z.number().min(0).describe('السعر المطلوب للسيارة.'),
+  condition: z.string().describe('الحالة العامة للسيارة (مثال: ممتاز، جيد، مقبول).'),
+  features: z.array(z.string()).describe('قائمة بالميزات الرئيسية للسيارة (مثال: فتحة سقف، مقاعد جلد، نظام ملاحة).'),
+  sellerNotes: z.string().optional().describe('أي ملاحظات أو مميزات إضافية من البائع.'),
 });
 export type SmartDescriptionAssistantInput = z.infer<typeof SmartDescriptionAssistantInputSchema>;
 
 const SmartDescriptionAssistantOutputSchema = z.object({
-  description: z.string().describe('A compelling and detailed car advertisement description.'),
+  description: z.string().describe('وصف إعلان سيارة جذاب ومفصل.'),
 });
 export type SmartDescriptionAssistantOutput = z.infer<typeof SmartDescriptionAssistantOutputSchema>;
 
@@ -35,22 +35,22 @@ const prompt = ai.definePrompt({
   name: 'smartDescriptionAssistantPrompt',
   input: { schema: SmartDescriptionAssistantInputSchema },
   output: { schema: SmartDescriptionAssistantOutputSchema },
-  prompt: `You are an expert copywriter specializing in creating compelling and detailed car advertisement descriptions for a marketplace. Your goal is to write a description that attracts buyers by highlighting the car's best features and overall value. Use enthusiastic and persuasive language.
+  prompt: `أنت كاتب إعلانات خبير متخصص في إنشاء أوصاف إعلانات سيارات جذابة ومفصلة لسوق إلكتروني. هدفك هو كتابة وصف يجذب المشترين من خلال إبراز أفضل ميزات السيارة وقيمتها الإجمالية. استخدم لغة حماسية ومقنعة.
 
-Here are the car specifications:
+إليك مواصفات السيارة:
 
-Make: {{{make}}}
-Model: {{{model}}}
-Year: {{{year}}}
-Mileage: {{{mileage}}} km
-Price: {{{price}}} SAR
-Condition: {{{condition}}}
-Features:
+الشركة المصنعة: {{{make}}}
+الموديل: {{{model}}}
+السنة: {{{year}}}
+المسافة المقطوعة: {{{mileage}}} كم
+السعر: {{{price}}} ريال سعودي
+الحالة: {{{condition}}}
+الميزات:
 {{#each features}}- {{{this}}}
 {{/each}}{{#if sellerNotes}}
-Seller's Highlights: {{{sellerNotes}}}{{/if}}
+ملاحظات البائع: {{{sellerNotes}}}{{/if}}
 
-Based on the information above, generate a detailed and engaging car advertisement description that is approximately 200-300 words long. Focus on benefits and paint an attractive picture for potential buyers.`,
+بناءً على المعلومات الواردة أعلاه، قم بإنشاء وصف إعلان سيارة مفصل وجذاب يتراوح طوله بين 150-250 كلمة. ركز على الفوائد وارسم صورة جذابة للمشترين المحتملين.`,
 });
 
 const smartDescriptionAssistantFlow = ai.defineFlow(

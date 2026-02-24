@@ -6,10 +6,10 @@ export default function SellPage() {
       <section className="max-w-4xl mx-auto">
         <div className="text-center mb-10">
             <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-primary font-headline">
-                Sell Your Car
+                بع سيارتك
             </h1>
             <p className="mt-4 text-lg text-muted-foreground">
-                Fill out the details below to list your car on our marketplace.
+                املأ التفاصيل أدناه لعرض سيارتك في سوقنا.
             </p>
         </div>
         <ListingForm />

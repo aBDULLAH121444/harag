@@ -2,134 +2,134 @@ import type { Car } from './types';
 import { PlaceHolderImages } from './placeholder-images';
 
 const CAR_DESCRIPTIONS = [
-  "This pristine vehicle is a perfect blend of style and performance. With low mileage and a full service history, it's ready for its next adventure. Don't miss out on this incredible deal.",
-  "A reliable and fuel-efficient car, ideal for city driving and long journeys alike. It has been meticulously maintained and comes with a host of modern features for your comfort and safety.",
-  "Experience luxury and power with this top-of-the-line model. Its stunning design is matched by a thrilling driving experience. Comes fully loaded with all the optional extras.",
-  "The perfect family car, offering spacious interiors and top-tier safety ratings. It has served our family well and is looking for a new home. In excellent condition, both inside and out."
+  "هذه السيارة النقية هي مزيج مثالي من الأناقة والأداء. مع عدد قليل من الأميال وتاريخ خدمة كامل، إنها جاهزة لمغامرتها التالية. لا تفوت هذه الصفقة المذهلة.",
+  "سيارة موثوقة وفعالة في استهلاك الوقود، مثالية للقيادة في المدينة والرحلات الطويلة على حد سواء. تمت صيانتها بدقة وتأتي مع مجموعة من الميزات الحديثة لراحتك وسلامتك.",
+  "جرب الفخامة والقوة مع هذا الطراز الأعلى من نوعه. تصميمها المذهل يضاهيه تجربة قيادة مثيرة. تأتي محملة بالكامل بجميع الإضافات الاختيارية.",
+  "السيارة العائلية المثالية، توفر مساحات داخلية واسعة وتقييمات أمان من الدرجة الأولى. لقد خدمت عائلتنا جيدًا وتبحث عن منزل جديد. في حالة ممتازة، من الداخل والخارج."
 ];
 
-const locations = ["Sana'a", "Aden", "Taiz", "Hodeidah", "Ibb", "Mukalla"];
+const locations = ["صنعاء", "عدن", "تعز", "الحديدة", "إب", "المكلا"];
 
 const cars: Car[] = [
   {
     id: '1',
-    make: 'Toyota',
-    model: 'Land Cruiser',
+    make: 'تويوتا',
+    model: 'لاند كروزر',
     year: 2022,
     price: 250000,
     mileage: 15000,
     location: locations[0],
     description: CAR_DESCRIPTIONS[0],
-    features: ['Sunroof', 'Leather Seats', 'Navigation System', '4x4'],
+    features: ['فتحة سقف', 'مقاعد جلد', 'نظام ملاحة', 'دفع رباعي'],
     images: PlaceHolderImages.filter(img => img.id.startsWith('car-')),
-    seller: { name: 'Ahmed Ali', avatarId: 'avatar-1' },
+    seller: { name: 'أحمد علي', avatarId: 'avatar-1' },
     postedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
-    condition: 'Like New',
+    condition: 'شبه جديد',
   },
   {
     id: '2',
-    make: 'Hyundai',
-    model: 'Elantra',
+    make: 'هيونداي',
+    model: 'إلنترا',
     year: 2021,
     price: 85000,
     mileage: 45000,
     location: locations[1],
     description: CAR_DESCRIPTIONS[1],
-    features: ['Backup Camera', 'Bluetooth', 'Cruise Control'],
+    features: ['كاميرا خلفية', 'بلوتوث', 'مثبت سرعة'],
     images: PlaceHolderImages.filter(img => img.id.startsWith('car-')).reverse(),
-    seller: { name: 'Fatima Saleh', avatarId: 'avatar-2' },
+    seller: { name: 'فاطمة صالح', avatarId: 'avatar-2' },
     postedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
-    condition: 'Good',
+    condition: 'جيد',
   },
   {
     id: '3',
-    make: 'Ford',
-    model: 'Explorer',
+    make: 'فورد',
+    model: 'إكسبلورر',
     year: 2020,
     price: 150000,
     mileage: 60000,
     location: locations[2],
     description: CAR_DESCRIPTIONS[3],
-    features: ['Alloy Wheels', 'Bluetooth', 'Backup Camera'],
+    features: ['جنوط ألمنيوم', 'بلوتوث', 'كاميرا خلفية'],
     images: [PlaceHolderImages[2], PlaceHolderImages[3], PlaceHolderImages[4]],
-    seller: { name: 'Ahmed Ali', avatarId: 'avatar-1' },
+    seller: { name: 'أحمد علي', avatarId: 'avatar-1' },
     postedAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), // 10 days ago
-    condition: 'Good',
+    condition: 'جيد',
   },
   {
     id: '4',
-    make: 'Mercedes-Benz',
-    model: 'E-Class',
+    make: 'مرسيدس بنز',
+    model: 'الفئة E',
     year: 2023,
     price: 320000,
     mileage: 5000,
     location: locations[0],
     description: CAR_DESCRIPTIONS[2],
-    features: ['Sunroof', 'Leather Seats', 'Navigation System', 'Cruise Control'],
+    features: ['فتحة سقف', 'مقاعد جلد', 'نظام ملاحة', 'مثبت سرعة'],
     images: [PlaceHolderImages[4], PlaceHolderImages[5], PlaceHolderImages[6]],
-    seller: { name: 'Fatima Saleh', avatarId: 'avatar-2' },
+    seller: { name: 'فاطمة صالح', avatarId: 'avatar-2' },
     postedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
-    condition: 'New',
+    condition: 'جديد',
   },
     {
     id: '5',
-    make: 'Toyota',
-    model: 'Camry',
+    make: 'تويوتا',
+    model: 'كامري',
     year: 2019,
     price: 95000,
     mileage: 80000,
     location: locations[3],
     description: CAR_DESCRIPTIONS[1],
-    features: ['Backup Camera', 'Bluetooth', 'Alloy Wheels'],
+    features: ['كاميرا خلفية', 'بلوتوث', 'جنوط ألمنيوم'],
     images: [PlaceHolderImages[1], PlaceHolderImages[7], PlaceHolderImages[0]],
-    seller: { name: 'Ahmed Ali', avatarId: 'avatar-1' },
+    seller: { name: 'أحمد علي', avatarId: 'avatar-1' },
     postedAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000), // 14 days ago
-    condition: 'Good',
+    condition: 'جيد',
   },
   {
     id: '6',
-    make: 'Nissan',
-    model: 'Patrol',
+    make: 'نيسان',
+    model: 'باترول',
     year: 2021,
     price: 220000,
     mileage: 35000,
     location: locations[4],
     description: CAR_DESCRIPTIONS[0],
-    features: ['4x4', 'Navigation System', 'Sunroof'],
+    features: ['دفع رباعي', 'نظام ملاحة', 'فتحة سقف'],
     images: [PlaceHolderImages[3], PlaceHolderImages[1], PlaceHolderImages[5]],
-    seller: { name: 'Fatima Saleh', avatarId: 'avatar-2' },
+    seller: { name: 'فاطمة صالح', avatarId: 'avatar-2' },
     postedAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000), // 8 days ago
-    condition: 'Like New',
+    condition: 'شبه جديد',
   },
   {
     id: '7',
-    make: 'BMW',
+    make: 'بي إم دبليو',
     model: 'X5',
     year: 2020,
     price: 280000,
     mileage: 55000,
     location: locations[5],
     description: CAR_DESCRIPTIONS[2],
-    features: ['Leather Seats', 'Sunroof', '4x4', 'Navigation System'],
+    features: ['مقاعد جلد', 'فتحة سقف', 'دفع رباعي', 'نظام ملاحة'],
     images: [PlaceHolderImages[5], PlaceHolderImages[6], PlaceHolderImages[7]],
-    seller: { name: 'Ahmed Ali', avatarId: 'avatar-1' },
+    seller: { name: 'أحمد علي', avatarId: 'avatar-1' },
     postedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
-    condition: 'Good',
+    condition: 'جيد',
   },
   {
     id: '8',
-    make: 'Kia',
-    model: 'Sportage',
+    make: 'كيا',
+    model: 'سبورتاج',
     year: 2022,
     price: 110000,
     mileage: 25000,
     location: locations[1],
     description: CAR_DESCRIPTIONS[3],
-    features: ['Backup Camera', 'Alloy Wheels', 'Bluetooth'],
+    features: ['كاميرا خلفية', 'جنوط ألمنيوم', 'بلوتوث'],
     images: [PlaceHolderImages[7], PlaceHolderImages[0], PlaceHolderImages[2]],
-    seller: { name: 'Fatima Saleh', avatarId: 'avatar-2' },
+    seller: { name: 'فاطمة صالح', avatarId: 'avatar-2' },
     postedAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000), // 20 days ago
-    condition: 'Like New',
+    condition: 'شبه جديد',
   },
 ];
 
@@ -144,7 +144,7 @@ export function getListingById(id: string) {
 export function getUserListings(userId: string) {
     // In a real app, userId would be used to filter.
     // Here we'll just return listings from a specific seller.
-    return cars.filter(car => car.seller.name === 'Ahmed Ali');
+    return cars.filter(car => car.seller.name === 'أحمد علي');
 }
 
 export function getImageById(id: string) {

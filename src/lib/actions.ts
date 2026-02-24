@@ -18,7 +18,7 @@ export async function generateCarDescription(input: SmartDescriptionAssistantInp
   const parsedInput = generateDescriptionSchema.safeParse(input);
 
   if (!parsedInput.success) {
-    return { error: 'Invalid input.' };
+    return { error: 'مدخلات غير صالحة.' };
   }
 
   try {
@@ -26,7 +26,7 @@ export async function generateCarDescription(input: SmartDescriptionAssistantInp
     return { description: result.description };
   } catch (error) {
     console.error(error);
-    return { error: 'Failed to generate description. Please try again.' };
+    return { error: 'فشل في إنشاء الوصف. الرجاء معاودة المحاولة.' };
   }
 }
 
@@ -53,11 +53,11 @@ export async function createListingAction(formData: FormData) {
     });
     
     if (!parsed.success) {
-        return { error: 'Invalid data provided.' };
+        return { error: 'البيانات المقدمة غير صالحة.' };
     }
 
     // In a real app, you would save this data to a database.
     console.log('New listing created:', parsed.data);
 
-    return { success: 'Your listing has been created successfully!' };
+    return { success: 'تم إنشاء قائمتك بنجاح!' };
 }

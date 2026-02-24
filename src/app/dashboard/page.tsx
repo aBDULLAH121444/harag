@@ -7,6 +7,8 @@ import { getUserListings } from "@/lib/data";
 import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { arSA } from "date-fns/locale";
+import { format } from "date-fns";
 
 export default function DashboardPage() {
     const userListings = getUserListings('current-user-id'); // ID is mocked in the function
@@ -15,29 +17,29 @@ export default function DashboardPage() {
         <div className="container mx-auto px-4 py-12">
             <div className="mb-8">
                 <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-primary font-headline">
-                    My Dashboard
+                    لوحة التحكم الخاصة بي
                 </h1>
                 <p className="mt-2 text-lg text-muted-foreground">
-                    Manage your car listings and account settings.
+                    إدارة قوائم سياراتك وإعدادات حسابك.
                 </p>
             </div>
             
             <Card>
                 <CardHeader>
-                    <CardTitle>My Active Listings</CardTitle>
-                    <CardDescription>You have {userListings.length} active listings.</CardDescription>
+                    <CardTitle>قوائمي النشطة</CardTitle>
+                    <CardDescription>لديك {userListings.length} من القوائم النشطة.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead className="hidden w-[100px] sm:table-cell">Image</TableHead>
-                                <TableHead>Car</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead className="hidden md:table-cell">Price</TableHead>
-                                <TableHead className="hidden md:table-cell">Posted</TableHead>
+                                <TableHead className="hidden w-[100px] sm:table-cell">صورة</TableHead>
+                                <TableHead>السيارة</TableHead>
+                                <TableHead>الحالة</TableHead>
+                                <TableHead className="hidden md:table-cell">السعر</TableHead>
+                                <TableHead className="hidden md:table-cell">نشرت في</TableHead>
                                 <TableHead>
-                                    <span className="sr-only">Actions</span>
+                                    <span className="sr-only">الإجراءات</span>
                                 </TableHead>
                             </TableRow>
                         </TableHeader>
@@ -59,10 +61,10 @@ export default function DashboardPage() {
                                         <div className="text-sm text-muted-foreground">{listing.location}</div>
                                     </TableCell>
                                     <TableCell>
-                                        <Badge variant="outline">Active</Badge>
+                                        <Badge variant="outline">نشط</Badge>
                                     </TableCell>
-                                    <TableCell className="hidden md:table-cell">{listing.price.toLocaleString()} SAR</TableCell>
-                                    <TableCell className="hidden md:table-cell">{new Date(listing.postedAt).toLocaleDateString()}</TableCell>
+                                    <TableCell className="hidden md:table-cell">{listing.price.toLocaleString()} ريال سعودي</TableCell>
+                                    <TableCell className="hidden md:table-cell">{format(listing.postedAt, 'P', { locale: arSA })}</TableCell>
                                     <TableCell>
                                         <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
@@ -72,9 +74,9 @@ export default function DashboardPage() {
                                             </Button>
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="end">
-                                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                            <DropdownMenuItem asChild><Link href="/sell" className="flex items-center"><Pencil className="mr-2 h-4 w-4"/> Edit</Link></DropdownMenuItem>
-                                            <DropdownMenuItem className="text-red-600 focus:text-red-600 flex items-center"><Trash2 className="mr-2 h-4 w-4"/> Delete</DropdownMenuItem>
+                                            <DropdownMenuLabel>الإجراءات</DropdownMenuLabel>
+                                            <DropdownMenuItem asChild><Link href="/sell" className="flex items-center"><Pencil className="ml-2 h-4 w-4"/> تعديل</Link></DropdownMenuItem>
+                                            <DropdownMenuItem className="text-red-600 focus:text-red-600 flex items-center"><Trash2 className="ml-2 h-4 w-4"/> حذف</DropdownMenuItem>
                                         </DropdownMenuContent>
                                         </DropdownMenu>
                                     </TableCell>

@@ -2,6 +2,7 @@ import type { ImagePlaceholder } from './placeholder-images';
 
 export type Car = {
   id: string;
+  userId: string;
   make: string;
   model: string;
   year: number;

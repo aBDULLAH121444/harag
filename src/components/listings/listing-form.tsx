@@ -1,6 +1,6 @@
 'use client';
 
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import {
@@ -24,13 +24,15 @@ import { Wand2, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
+import { useUser } from '@/firebase';
+import Link from 'next/link';
 
 const listingFormSchema = z.object({
   make: z.string().min(1, 'الشركة المصنعة مطلوبة'),
   model: z.string().min(1, 'الموديل مطلوب'),
   year: z.string().min(1, 'السنة مطلوبة'),
-  price: z.string().min(1, 'السعر مطلوب'),
-  mileage: z.string().min(1, 'المسافة المقطوعة مطلوبة'),
+  price: z.string().min(1, 'السعر مطلوب').regex(/^\d+$/, "يجب أن يكون السعر رقمًا"),
+  mileage: z.string().min(1, 'المسافة المقطوعة مطلوبة').regex(/^\d+$/, "يجب أن تكون المسافة المقطوعة رقمًا"),
   location: z.string().min(1, 'الموقع مطلوب'),
   condition: z.string().min(1, 'الحالة مطلوبة'),
   description: z.string().min(50, 'يجب أن لا يقل الوصف عن 50 حرفًا'),
@@ -45,6 +47,7 @@ export default function ListingForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
+  const { user, isUserLoading } = useUser();
 
   const form = useForm<ListingFormValues>({
     resolver: zodResolver(listingFormSchema),
@@ -67,6 +70,16 @@ export default function ListingForm() {
   const handleGenerateDescription = async () => {
     setIsGenerating(true);
     const values = form.getValues();
+    const year = parseInt(values.year, 10);
+    const mileage = parseInt(values.mileage, 10);
+    const price = parseInt(values.price, 10);
+
+    if (isNaN(year) || isNaN(mileage) || isNaN(price)) {
+      toast({ variant: 'destructive', title: 'خطأ', description: 'يرجى إدخال قيم رقمية صالحة للسنة والسعر والمسافة المقطوعة.' });
+      setIsGenerating(false);
+      return;
+    }
+    
     const result = await generateCarDescription({
       make: values.make,
       model: values.model,
@@ -88,17 +101,13 @@ export default function ListingForm() {
   };
 
   async function onSubmit(data: ListingFormValues) {
+    if (!user) {
+      toast({ variant: 'destructive', title: 'خطأ', description: 'يجب عليك تسجيل الدخول لإنشاء إعلان.' });
+      return;
+    }
     setIsSubmitting(true);
-    const formData = new FormData();
-    Object.entries(data).forEach(([key, value]) => {
-      if (key === 'features' && Array.isArray(value)) {
-        value.forEach(feature => formData.append('features', feature));
-      } else if (value !== undefined) {
-        formData.append(key, String(value));
-      }
-    });
-
-    const result = await createListingAction(formData);
+    
+    const result = await createListingAction(data, user.uid);
     setIsSubmitting(false);
 
     if (result.success) {
@@ -108,6 +117,31 @@ export default function ListingForm() {
       toast({ variant: 'destructive', title: 'خطأ', description: result.error });
     }
   }
+
+  if (isUserLoading) {
+    return (
+      <div className="flex justify-center items-center p-12">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>يرجى تسجيل الدخول</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p>يجب عليك تسجيل الدخول لإنشاء إعلان جديد.</p>
+          <Button asChild className="mt-4">
+            <Link href="/login">تسجيل الدخول</Link>
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
 
   return (
     <Form {...form}>

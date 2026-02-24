@@ -1,3 +1,64 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "car-1",
+      "description": "White SUV",
+      "imageUrl": "https://images.unsplash.com/photo-1684849311731-eb8293657d7e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx3aGl0ZSUyMHN1dnxlbnwwfHx8fDE3NzE5NDY4MjB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "white suv"
+    },
+    {
+      "id": "car-2",
+      "description": "Red Sports Car",
+      "imageUrl": "https://images.unsplash.com/photo-1696585537688-a13b20633a78?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxyZWQlMjBzcG9ydHNjYXJ8ZW58MHx8fHwxNzcxOTQ2ODIwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "red sportscar"
+    },
+    {
+      "id": "car-3",
+      "description": "Black Sedan",
+      "imageUrl": "https://images.unsplash.com/photo-1764605206511-7a649d9df63b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxibGFjayUyMHNlZGFufGVufDB8fHx8MTc3MTk0NjgyMHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "black sedan"
+    },
+    {
+      "id": "car-4",
+      "description": "Blue Pickup Truck",
+      "imageUrl": "https://images.unsplash.com/photo-1758158418702-5d7650bf3ca4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxibHVlJTIwcGlja3VwfGVufDB8fHx8MTc3MTk0NjgyMHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "blue pickup"
+    },
+    {
+      "id": "car-5",
+      "description": "Silver Minivan",
+      "imageUrl": "https://images.unsplash.com/photo-1762529485769-bde2001ffdd2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxzaWx2ZXIlMjBtaW5pdmFufGVufDB8fHx8MTc3MTk0NjgyMHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "silver minivan"
+    },
+    {
+      "id": "car-6",
+      "description": "Grey Coupe",
+      "imageUrl": "https://images.unsplash.com/photo-1653597234925-da8af32356d5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxncmV5JTIwY291cGV8ZW58MHx8fHwxNzcxOTQ2ODIwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "grey coupe"
+    },
+    {
+      "id": "car-7",
+      "description": "Green Hatchback",
+      "imageUrl": "https://images.unsplash.com/photo-1765863237934-8cbdb956bdb9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxncmVlbiUyMGhhdGNoYmFja3xlbnwwfHx8fDE3NzE5NDY4MjB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "green hatchback"
+    },
+    {
+      "id": "car-8",
+      "description": "Yellow Convertible",
+      "imageUrl": "https://images.unsplash.com/photo-1672912756158-48cc6e1dd6bc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHx5ZWxsb3clMjBjb252ZXJ0aWJsZXxlbnwwfHx8fDE3NzE4NDI5ODR8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "yellow convertible"
+    },
+    {
+      "id": "avatar-1",
+      "description": "User avatar",
+      "imageUrl": "https://images.unsplash.com/photo-1624395213043-fa2e123b2656?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxtYW4lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NzE5Mzk5MDZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "man portrait"
+    },
+    {
+      "id": "avatar-2",
+      "description": "User avatar",
+      "imageUrl": "https://images.unsplash.com/photo-1557053908-4793c484d06f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc3MTgzNTc1N3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "woman portrait"
+    }
+  ]
 }

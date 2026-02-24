@@ -12,23 +12,29 @@ export default function FilterBar() {
 
   return (
     <Card className="mb-8 shadow-sm">
-        <CardContent className="p-4">
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
-                <div className="md:col-span-1">
-                    <label className="text-sm font-medium text-muted-foreground">الشركة المصنعة</label>
-                    <Select onValueChange={setSelectedMake}>
-                        <SelectTrigger>
-                        <SelectValue placeholder="اختر الشركة" />
-                        </SelectTrigger>
-                        <SelectContent>
-                        {CAR_MAKES.map((make) => (
-                            <SelectItem key={make} value={make}>
+        <CardContent className="p-4 space-y-4">
+            <div>
+                <label className="text-sm font-medium text-muted-foreground mb-2 block">الشركة المصنعة</label>
+                <div className="flex flex-wrap gap-2">
+                    <Button 
+                        variant={!selectedMake ? 'default' : 'outline'}
+                        onClick={() => setSelectedMake('')}
+                    >
+                        الكل
+                    </Button>
+                    {CAR_MAKES.map((make) => (
+                        <Button
+                            key={make}
+                            variant={selectedMake === make ? 'default' : 'outline'}
+                            onClick={() => setSelectedMake(make)}
+                        >
                             {make}
-                            </SelectItem>
-                        ))}
-                        </SelectContent>
-                    </Select>
+                        </Button>
+                    ))}
                 </div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                 <div className="md:col-span-1">
                      <label className="text-sm font-medium text-muted-foreground">الموديل</label>
                     <Select disabled={!selectedMake}>

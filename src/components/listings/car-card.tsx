@@ -1,7 +1,7 @@
 import type { Car } from '@/lib/types';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Gauge, MapPin, Calendar, Tag, Car as CarIcon } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
@@ -33,12 +33,14 @@ export default function CarCard({ car }: CarCardProps) {
             </div>
           )}
           <Badge variant="secondary" className="absolute top-2 left-2">{car.condition}</Badge>
+          <div className="absolute top-0 right-0 bg-black bg-opacity-60 text-white px-3 py-1 rounded-bl-lg">
+            <h3 className="text-sm font-semibold truncate group-hover:text-white/90 transition-colors">
+              {car.make} {car.model}
+            </h3>
+          </div>
         </CardHeader>
         <CardContent className="flex-grow p-4">
-          <CardTitle className="text-lg font-bold truncate group-hover:text-primary transition-colors">
-            {car.make} {car.model}
-          </CardTitle>
-          <div className="mt-2 text-sm text-muted-foreground space-y-2">
+          <div className="text-sm text-muted-foreground space-y-2">
             <div className="flex items-center gap-2">
               <Tag className="w-4 h-4 text-accent" />
               <span className="font-semibold text-base text-primary">{car.price.toLocaleString()} {car.currency}</span>
@@ -63,5 +65,3 @@ export default function CarCard({ car }: CarCardProps) {
     </Link>
   );
 }
-
-    

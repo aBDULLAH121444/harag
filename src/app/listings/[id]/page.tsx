@@ -30,6 +30,8 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <h1 className="text-2xl md:text-3xl font-bold mb-4">{car.make} {car.model} {car.year}</h1>
+      
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
             <Carousel className="w-full rounded-lg overflow-hidden shadow-lg" dir="ltr">
@@ -67,8 +69,7 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
         <div className="lg:col-span-1 space-y-6">
             <Card>
                 <CardHeader>
-                    <h1 className="text-3xl font-bold font-headline text-primary">{car.year} {car.make} {car.model}</h1>
-                    <div className="flex items-center gap-2 text-2xl font-semibold text-accent pt-2">
+                    <div className="flex items-center gap-2 text-2xl font-semibold text-accent">
                         <Tag className="w-6 h-6 ml-2" />
                         <span>{car.price.toLocaleString()} {car.currency}</span>
                     </div>
@@ -132,5 +133,3 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
     </div>
   );
 }
-
-    

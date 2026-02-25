@@ -16,9 +16,7 @@ const brandNameToIdMap: Record<string, string> = {
     "شيفروليه": "logo-chevrolet",
 };
 
-// Create a map for quick lookups
 const logoMap = new Map(PlaceHolderImages.filter(img => img.id.startsWith('logo-')).map(img => [img.id, img]));
-
 
 type CarBrandLogoProps = {
     brand: string;
@@ -30,17 +28,18 @@ export const CarBrandLogo = ({ brand, className }: CarBrandLogoProps) => {
   const logoData = logoId ? logoMap.get(logoId) : undefined;
 
   if (!logoData) {
-    return <span className={cn("text-sm", className)}>{brand}</span>;
+    return <span className={cn("text-sm font-bold", className)}>{brand}</span>;
   }
 
   return (
     <Image
       src={logoData.imageUrl}
       alt={logoData.description}
-      width={128}
-      height={64}
+      width={160}
+      height={80}
       className={cn("h-full w-auto object-contain", className)}
       data-ai-hint={logoData.imageHint}
+      unoptimized // To ensure Cloudinary transformations don't conflict with next/image if URLs are direct
     />
   );
 };

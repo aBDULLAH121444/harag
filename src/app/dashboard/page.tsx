@@ -138,12 +138,12 @@ export default function DashboardPage() {
                 
                 <Card>
                     <CardHeader>
-                        <CardDescription>لديك {userListings.length} من القوائم.</CardDescription>
+                        <CardDescription>لديك {userListings.length} من الإعلانات.</CardDescription>
                     </CardHeader>
                     <CardContent>
                         {userListings.length === 0 ? (
                             <div className="text-center py-10">
-                                <p className="text-muted-foreground">لم تقم بإضافة أي قوائم حتى الآن.</p>
+                                <p className="text-muted-foreground">لم تقم بإضافة أي إعلانات حتى الآن.</p>
                             </div>
                         ) : (
                         <Table>

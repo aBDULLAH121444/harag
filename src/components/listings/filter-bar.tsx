@@ -60,10 +60,10 @@ export default function FilterBar() {
       <Card className="mb-8 shadow-sm">
         <CardContent className="p-4 space-y-4">
             <div className="flex gap-3 overflow-hidden pb-4">
-                <Skeleton className="h-12 w-20 flex-shrink-0" />
-                <Skeleton className="h-12 w-20 flex-shrink-0" />
-                <Skeleton className="h-12 w-20 flex-shrink-0" />
-                <Skeleton className="h-12 w-20 flex-shrink-0" />
+                <Skeleton className="h-10 w-16 flex-shrink-0" />
+                <Skeleton className="h-10 w-16 flex-shrink-0" />
+                <Skeleton className="h-10 w-16 flex-shrink-0" />
+                <Skeleton className="h-10 w-16 flex-shrink-0" />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-end">
                 <Skeleton className="h-10 w-full" />
@@ -84,7 +84,7 @@ export default function FilterBar() {
                         <Button 
                             variant={!selectedMake ? 'default' : 'outline'}
                             onClick={() => handleMakeSelection('')}
-                            className="h-12 px-4 flex-shrink-0 rounded-lg font-bold"
+                            className="h-10 px-4 flex-shrink-0 rounded-lg font-bold text-xs"
                         >
                             الكل
                         </Button>
@@ -93,7 +93,7 @@ export default function FilterBar() {
                                 key={make}
                                 onClick={() => handleMakeSelection(make)}
                                 className={cn(
-                                    "p-1 h-12 w-20 flex items-center justify-center rounded-lg border-2 transition-all duration-300 flex-shrink-0 group relative overflow-hidden",
+                                    "p-0.5 h-10 w-16 flex items-center justify-center rounded-lg border-2 transition-all duration-300 flex-shrink-0 group relative overflow-hidden",
                                     selectedMake === make
                                         ? "border-primary bg-white shadow-md scale-105"
                                         : "border-transparent bg-white/50 hover:border-primary/30 hover:bg-white hover:scale-105"
@@ -103,12 +103,12 @@ export default function FilterBar() {
                                 <CarBrandLogo 
                                   brand={make} 
                                   className={cn(
-                                    "h-8 w-auto transition-transform duration-300 group-hover:scale-110 mix-blend-multiply"
+                                    "h-full w-full transition-transform duration-300 group-hover:scale-110 mix-blend-multiply"
                                   )}
                                 />
                                 {selectedMake === make && (
-                                  <div className="absolute bottom-1 right-1">
-                                    <div className="h-1 w-1 rounded-full bg-primary" />
+                                  <div className="absolute bottom-0.5 right-0.5">
+                                    <div className="h-1.5 w-1.5 rounded-full bg-primary" />
                                   </div>
                                 )}
                             </button>

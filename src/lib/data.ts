@@ -52,7 +52,7 @@ export async function getListings(filters?: {
     const { firestore: db } = getFirebaseServerServices();
     const carListingsRef = collection(db, 'carListings');
     
-    let q = query(carListingsRef, where('status', '==', 'active'), orderBy('createdAt', 'desc'));
+    let q = query(carListingsRef, where('status', '==', 'active'));
 
     // Apply filters if they exist
     if (filters) {
@@ -72,7 +72,10 @@ export async function getListings(filters?: {
 
     try {
         const snapshot = await getDocs(q);
-        return snapshot.docs.map(docToCar);
+        const listings = snapshot.docs.map(docToCar);
+        // Sort listings by date descending (newest first)
+        listings.sort((a, b) => b.postedAt.getTime() - a.postedAt.getTime());
+        return listings;
     } catch (e) {
         console.error("Error getting listings: ", e);
         // This can happen if Firestore indexes are not set up.

@@ -1,7 +1,6 @@
 import { getUserListings, getUserProfile } from '@/lib/data';
 import { notFound } from 'next/navigation';
 import CarCard from '@/components/listings/car-card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardHeader } from '@/components/ui/card';
 import { format } from 'date-fns';
 import { arSA } from 'date-fns/locale';
@@ -36,19 +35,9 @@ export default async function SellerPage({ params }: { params: { userId: string 
         <div className="container mx-auto px-4 py-12">
             <Card className="mb-8">
                 <CardHeader>
-                    <div className="flex items-center gap-4">
-                         <Avatar className="h-20 w-20">
-                            {profile.photoURL ? (
-                                <AvatarImage src={profile.photoURL} alt={sellerName} />
-                            ) : (
-                                <AvatarImage src="https://images.unsplash.com/photo-1624395213043-fa2e123b2656?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxtYW4lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NzE5Mzk5MDZ8MA&ixlib=rb-4.1.0&q=80&w=1080" alt={sellerName} data-ai-hint="man portrait" />
-                            )}
-                            <AvatarFallback>{sellerName.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                            <h1 className="text-3xl font-bold font-headline text-primary">{sellerName}</h1>
-                            <p className="text-muted-foreground">عضو منذ {format(joinDate, 'MMMM yyyy', { locale: arSA })}</p>
-                        </div>
+                    <div>
+                        <h1 className="text-3xl font-bold font-headline text-primary">{sellerName}</h1>
+                        <p className="text-muted-foreground">عضو منذ {format(joinDate, 'MMMM yyyy', { locale: arSA })}</p>
                     </div>
                 </CardHeader>
             </Card>

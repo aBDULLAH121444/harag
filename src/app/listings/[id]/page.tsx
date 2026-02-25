@@ -4,7 +4,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { Separator } from '@/components/ui/separator';
@@ -118,15 +117,7 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
                     <CardTitle>معلومات البائع</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <Link href={`/seller/${car.userId}`} className="flex items-center gap-4 group rounded-lg p-2 -m-2 transition-colors hover:bg-accent/50">
-                        <Avatar className="h-16 w-16">
-                            {car.seller.avatarUrl ? (
-                                <AvatarImage src={car.seller.avatarUrl} alt={car.seller.name} />
-                            ) : (
-                                <AvatarImage src="https://images.unsplash.com/photo-1624395213043-fa2e123b2656?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxtYW4lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NzE5Mzk5MDZ8MA&ixlib=rb-4.1.0&q=80&w=1080" alt={car.seller.name} data-ai-hint="man portrait" />
-                            )}
-                            <AvatarFallback>{car.seller.name.charAt(0)}</AvatarFallback>
-                        </Avatar>
+                    <Link href={`/seller/${car.userId}`} className="block group rounded-lg p-2 -m-2 transition-colors hover:bg-accent/50">
                         <div>
                             <p className="font-bold text-lg group-hover:text-primary">{car.seller.name}</p>
                             <p className="text-sm text-muted-foreground">عضو منذ {format(car.seller.joinedAt, 'MMMM yyyy', { locale: arSA })}</p>

@@ -18,10 +18,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CAR_MAKES, CAR_MODELS, CAR_YEARS, CAR_FEATURES, CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET } from '@/lib/constants';
+import { CAR_MAKES, CAR_MODELS, CAR_YEARS, CAR_FEATURES, CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET, YEMENI_GOVERNORATES } from '@/lib/constants';
 import { generateCarDescription } from '@/lib/actions';
 import { Wand2, Loader2 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from 'next/navigation';
 import { useUser, useFirestore, FirestorePermissionError, errorEmitter } from '@/firebase';
@@ -39,7 +39,7 @@ const listingFormSchema = z.object({
   mileage: z.string().min(1, 'المسافة المقطوعة مطلوبة').regex(/^\d+$/, "يجب أن تكون المسافة المقطوعة رقمًا"),
   location: z.string().min(1, 'الموقع مطلوب'),
   condition: z.string().min(1, 'الحالة مطلوبة'),
-  description: z.string().min(50, 'يجب أن لا يقل الوصف عن 50 حرفًا'),
+  description: z.string().optional(),
   features: z.array(z.string()),
   sellerNotes: z.string().optional(),
 });
@@ -50,8 +50,8 @@ export default function ListingForm() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState('');
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const { toast } = useToast();
   const router = useRouter();
   const { user, isUserLoading } = useUser();
@@ -72,20 +72,30 @@ export default function ListingForm() {
       sellerNotes: '',
     },
   });
+  
+  useEffect(() => {
+    // This is a cleanup function that will run when the component unmounts.
+    return () => {
+      imagePreviews.forEach(url => URL.revokeObjectURL(url));
+    };
+  }, [imagePreviews]);
 
   const selectedMake = form.watch('make');
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] || null;
-    setImageFile(file);
-    if (file) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            setImagePreview(reader.result as string);
-        };
-        reader.readAsDataURL(file);
+    const files = e.target.files;
+    if (files) {
+      const fileArray = Array.from(files);
+      setImageFiles(fileArray);
+      
+      // Clean up previous previews before creating new ones
+      imagePreviews.forEach(url => URL.revokeObjectURL(url));
+
+      const previewArray = fileArray.map(file => URL.createObjectURL(file));
+      setImagePreviews(previewArray);
     } else {
-        setImagePreview(null);
+      setImageFiles([]);
+      setImagePreviews([]);
     }
   };
 
@@ -136,26 +146,32 @@ export default function ListingForm() {
     
     try {
         let imageUrls: string[] = [];
-        if (imageFile) {
-            setStatus("جاري الرفع إلى Cloudinary...");
-            const formData = new FormData();
-            formData.append("file", imageFile);
-            formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+        if (imageFiles.length > 0) {
+            setStatus(`جاري رفع ${imageFiles.length} ${imageFiles.length > 1 ? 'صور' : 'صورة'} إلى Cloudinary...`);
+            
+            const uploadPromises = imageFiles.map(file => {
+                const formData = new FormData();
+                formData.append("file", file);
+                formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
 
-            const cloudRes = await fetch(
-                `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
-                { method: "POST", body: formData }
-            );
-            const cloudData = await cloudRes.json();
+                return fetch(
+                    `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+                    { method: "POST", body: formData }
+                ).then(res => res.json());
+            });
 
-            if (!cloudData.secure_url) {
-                throw new Error(cloudData.error?.message || "فشل الرفع إلى Cloudinary. تحقق من إعداداتك.");
-            }
-            imageUrls.push(cloudData.secure_url);
+            const uploadResults = await Promise.all(uploadPromises);
+            
+            imageUrls = uploadResults.map(result => {
+                if (!result.secure_url) {
+                    throw new Error(result.error?.message || "فشل أحد الصور في الرفع إلى Cloudinary.");
+                }
+                return result.secure_url;
+            });
         } else {
             imageUrls = PlaceHolderImages.filter(img => !img.id.startsWith('avatar-'))
                                           .sort(() => 0.5 - Math.random())
-                                          .slice(0, 1)
+                                          .slice(0, 3)
                                           .map(img => img.imageUrl);
         }
 
@@ -169,7 +185,7 @@ export default function ListingForm() {
             year: parseInt(data.year, 10),
             price: parseInt(data.price, 10),
             currency: 'ريال سعودي',
-            description: data.description,
+            description: data.description || '',
             images: imageUrls,
             mileage: parseInt(data.mileage, 10),
             location: data.location,
@@ -187,6 +203,7 @@ export default function ListingForm() {
             router.push('/dashboard');
           })
           .catch((error) => {
+            console.error("Firestore Error:", error);
             const permissionError = new FirestorePermissionError({
                 path: carListingsRef.path,
                 operation: 'create',
@@ -200,8 +217,8 @@ export default function ListingForm() {
             setStatus("");
           });
     } catch (uploadError: any) {
-        console.error("Image upload failed:", uploadError);
-        toast({ variant: 'destructive', title: 'خطأ في رفع الصورة', description: uploadError.message || 'فشل رفع الصورة. يرجى المحاولة مرة أخرى.' });
+        console.error("Upload failed:", uploadError);
+        toast({ variant: 'destructive', title: 'خطأ في رفع الصورة', description: uploadError.message || 'فشل رفع الصور. يرجى المحاولة مرة أخرى.' });
         setIsSubmitting(false);
         setStatus("");
     }
@@ -327,7 +344,7 @@ export default function ListingForm() {
                     <FormControl>
                       <SelectTrigger><SelectValue placeholder="اختر الموقع" /></SelectTrigger>
                     </FormControl>
-                    <SelectContent>{["صنعاء", "عدن", "تعز", "الحديدة", "إب", "المكلا"].map(loc => <SelectItem key={loc} value={loc}>{loc}</SelectItem>)}</SelectContent>
+                    <SelectContent>{YEMENI_GOVERNORATES.map(loc => <SelectItem key={loc} value={loc}>{loc}</SelectItem>)}</SelectContent>
                   </Select>
                   <FormMessage />
                 </FormItem>
@@ -337,25 +354,29 @@ export default function ListingForm() {
         </Card>
 
         <Card>
-            <CardHeader><CardTitle>صورة الإعلان</CardTitle></CardHeader>
+            <CardHeader><CardTitle>صور الإعلان</CardTitle></CardHeader>
             <CardContent>
                 <FormField
                     control={form.control}
-                    name="image"
+                    name="images"
                     render={() => (
                         <FormItem>
-                            <FormLabel>ارفع صورة لسيارتك</FormLabel>
+                            <FormLabel>ارفع صورًا لسيارتك</FormLabel>
                             <FormControl>
-                                <Input type="file" accept="image/*" onChange={handleImageChange} />
+                                <Input type="file" accept="image/*" multiple onChange={handleImageChange} />
                             </FormControl>
-                            <FormDescription>سيتم رفع الصورة إلى Cloudinary.</FormDescription>
+                            <FormDescription>يمكنك رفع عدة صور. سيتم رفع الصور إلى Cloudinary.</FormDescription>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
-                {imagePreview && (
-                    <div className="mt-4 relative aspect-video w-full max-w-md mx-auto">
-                        <Image src={imagePreview} alt="معاينة الصورة" fill className="rounded-md object-cover" />
+                {imagePreviews.length > 0 && (
+                    <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-4">
+                        {imagePreviews.map((preview, index) => (
+                             <div key={index} className="relative aspect-video">
+                                <Image src={preview} alt={`معاينة الصورة ${index + 1}`} fill className="rounded-md object-cover" />
+                            </div>
+                        ))}
                     </div>
                 )}
             </CardContent>
@@ -432,7 +453,7 @@ export default function ListingForm() {
                   <FormControl>
                     <Textarea placeholder="صف سيارتك بالتفصيل..." className="min-h-[150px]" {...field} />
                   </FormControl>
-                  <FormDescription>الوصف المفصل يساعد على بيع سيارتك بشكل أسرع. 50 حرفًا على الأقل.</FormDescription>
+                  <FormDescription>الوصف المفصل يساعد على بيع سيارتك بشكل أسرع.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

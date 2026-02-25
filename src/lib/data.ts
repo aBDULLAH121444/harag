@@ -35,7 +35,6 @@ function docToCar(docSnap: any): Car {
         images: images,
         seller: {
             name: data.sellerName || 'مستخدم غير معروف',
-            avatarUrl: data.sellerPhotoURL,
             phoneNumber: data.sellerPhoneNumber,
             joinedAt: (data.sellerJoinedAt as Timestamp)?.toDate() || new Date(),
         },
@@ -49,7 +48,6 @@ export async function getListings(filters?: {
     make?: string;
     model?: string;
     year?: string;
-    maxPrice?: string;
   }): Promise<Car[]> {
     const { firestore: db } = getFirebaseServerServices();
     const carListingsRef = collection(db, 'carListings');
@@ -66,9 +64,6 @@ export async function getListings(filters?: {
         }
         if (filters.year && !isNaN(parseInt(filters.year))) {
             q = query(q, where('year', '==', parseInt(filters.year, 10)));
-        }
-        if (filters.maxPrice && !isNaN(parseInt(filters.maxPrice))) {
-            q = query(q, where('price', '<=', parseInt(filters.maxPrice, 10)));
         }
     }
 
@@ -133,5 +128,3 @@ export async function getUserProfile(userId: string) {
     }
     return null;
 }
-
-    

@@ -9,7 +9,6 @@ export default async function Home({
     make?: string;
     model?: string;
     year?: string;
-    maxPrice?: string;
   };
 }) {
   const listings = await getListings(searchParams);

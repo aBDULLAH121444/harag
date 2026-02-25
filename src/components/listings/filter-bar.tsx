@@ -37,11 +37,13 @@ export default function FilterBar() {
 
     if (selectedMake) {
       params.set('make', selectedMake);
-      if (selectedModel) {
-        params.set('model', selectedModel);
-      }
     }
-    if (selectedYear) params.set('year', selectedYear);
+    if (selectedModel) {
+      params.set('model', selectedModel);
+    }
+    if (selectedYear) {
+      params.set('year', selectedYear);
+    }
     
     router.push(`/?${params.toString()}`);
   };
@@ -88,14 +90,7 @@ export default function FilterBar() {
         <CardContent className="p-4 space-y-4">
             <div>
                 <ScrollArea className="w-full whitespace-nowrap">
-                    <div className="flex w-max gap-3 pb-4" dir="ltr">
-                        <Button 
-                            variant={!selectedMake ? 'default' : 'outline'}
-                            onClick={() => handleMakeSelection('')}
-                            className="h-14 px-6 flex-shrink-0"
-                        >
-                            الكل
-                        </Button>
+                    <div className="flex w-max space-x-reverse space-x-3 pb-4" dir="rtl">
                         {CAR_MAKES.map((make) => (
                              <button
                                 key={make}
@@ -108,12 +103,16 @@ export default function FilterBar() {
                                 )}
                                 title={make}
                             >
-                                <CarBrandLogo brand={make} className={cn(
-                                    "h-8 w-auto text-foreground/70 transition-all group-hover:text-foreground",
-                                    selectedMake === make && "text-primary"
-                                )}/>
+                                <CarBrandLogo brand={make} className={cn("h-8 w-auto transition-all")}/>
                             </button>
                         ))}
+                         <Button 
+                            variant={!selectedMake ? 'default' : 'outline'}
+                            onClick={() => handleMakeSelection('')}
+                            className="h-14 px-6 flex-shrink-0"
+                        >
+                            الكل
+                        </Button>
                     </div>
                     <ScrollBar orientation="horizontal" />
                 </ScrollArea>

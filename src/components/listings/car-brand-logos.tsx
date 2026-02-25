@@ -64,10 +64,10 @@ const BMWLogo = ({ className }: LogoProps) => (
 
 const NissanLogo = ({ className }: LogoProps) => (
     <Image
-      src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Nissan_logo.svg/1200px-Nissan_logo.svg.png"
+      src="https://upload.wikimedia.org/wikipedia/commons/6/67/Nissan-logo.png"
       alt="Nissan Logo"
-      width={1200}
-      height={290}
+      width={1016}
+      height={250}
       className={className}
       priority
     />
@@ -75,10 +75,10 @@ const NissanLogo = ({ className }: LogoProps) => (
 
 const KiaLogo = ({ className }: LogoProps) => (
     <Image
-      src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Kia-logo.svg/1280px-Kia-logo.svg.png"
+      src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Kia_logo_2.svg/320px-Kia_logo_2.svg.png"
       alt="Kia Logo"
-      width={1280}
-      height={252}
+      width={320}
+      height={63}
       className={className}
       priority
     />
@@ -86,10 +86,10 @@ const KiaLogo = ({ className }: LogoProps) => (
 
 const LexusLogo = ({ className }: LogoProps) => (
     <Image
-      src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Lexus_logo.svg/1280px-Lexus_logo.svg.png"
+      src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Lexus_Logo.svg/320px-Lexus_Logo.svg.png"
       alt="Lexus Logo"
-      width={1280}
-      height={904}
+      width={320}
+      height={228}
       className={className}
       priority
     />

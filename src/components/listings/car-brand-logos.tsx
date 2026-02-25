@@ -7,9 +7,11 @@ type LogoProps = {
   className?: string;
 };
 
+// All logos are now hosted on Cloudinary for reliability.
+
 const ToyotaLogo = ({ className }: LogoProps) => (
   <Image
-    src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Toyota_logo.svg/1280px-Toyota_logo.svg.png"
+    src="https://res.cloudinary.com/dbm1benv0/image/upload/v1722285000/haraj-yemen-logos/toyota_logo.png"
     alt="Toyota Logo"
     width={1280}
     height={800}
@@ -20,7 +22,7 @@ const ToyotaLogo = ({ className }: LogoProps) => (
 
 const HyundaiLogo = ({ className }: LogoProps) => (
     <Image
-        src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Hyundai_logo_2.svg/1280px-Hyundai_logo_2.svg.png"
+        src="https://res.cloudinary.com/dbm1benv0/image/upload/v1722285001/haraj-yemen-logos/hyundai_logo.png"
         alt="Hyundai Logo"
         width={1280}
         height={333}
@@ -31,7 +33,7 @@ const HyundaiLogo = ({ className }: LogoProps) => (
 
 const FordLogo = ({ className }: LogoProps) => (
   <Image
-    src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Ford_logo_flat.svg/1200px-Ford_logo_flat.svg.png"
+    src="https://res.cloudinary.com/dbm1benv0/image/upload/v1722285002/haraj-yemen-logos/ford_logo.png"
     alt="Ford Logo"
     width={1200}
     height={450}
@@ -42,7 +44,7 @@ const FordLogo = ({ className }: LogoProps) => (
 
 const MercedesLogo = ({ className }: LogoProps) => (
     <Image
-      src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Mercedes-Benz_text_logo.svg/2560px-Mercedes-Benz_text_logo.svg.png"
+      src="https://res.cloudinary.com/dbm1benv0/image/upload/v1722285003/haraj-yemen-logos/mercedes_logo.png"
       alt="Mercedes-Benz Logo"
       width={2560}
       height={341}
@@ -53,7 +55,7 @@ const MercedesLogo = ({ className }: LogoProps) => (
 
 const BMWLogo = ({ className }: LogoProps) => (
     <Image
-      src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/BMW.svg/1200px-BMW.svg.png"
+      src="https://res.cloudinary.com/dbm1benv0/image/upload/v1722285004/haraj-yemen-logos/bmw_logo.png"
       alt="BMW Logo"
       width={100}
       height={100}
@@ -64,7 +66,7 @@ const BMWLogo = ({ className }: LogoProps) => (
 
 const NissanLogo = ({ className }: LogoProps) => (
     <Image
-      src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Nissan-logo.png/600px-Nissan-logo.png"
+      src="https://res.cloudinary.com/dbm1benv0/image/upload/v1722285005/haraj-yemen-logos/nissan_logo.png"
       alt="Nissan Logo"
       width={600}
       height={116}
@@ -75,7 +77,7 @@ const NissanLogo = ({ className }: LogoProps) => (
 
 const KiaLogo = ({ className }: LogoProps) => (
     <Image
-      src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/KIA_logo2.svg/2560px-KIA_logo2.svg.png"
+      src="https://res.cloudinary.com/dbm1benv0/image/upload/v1722285006/haraj-yemen-logos/kia_logo.png"
       alt="Kia Logo"
       width={2560}
       height={508}
@@ -86,7 +88,7 @@ const KiaLogo = ({ className }: LogoProps) => (
 
 const LexusLogo = ({ className }: LogoProps) => (
     <Image
-      src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Lexus_division_wordmark.svg/2560px-Lexus_division_wordmark.svg.png"
+      src="https://res.cloudinary.com/dbm1benv0/image/upload/v1722285007/haraj-yemen-logos/lexus_logo.png"
       alt="Lexus Logo"
       width={2560}
       height={384}
@@ -97,7 +99,7 @@ const LexusLogo = ({ className }: LogoProps) => (
 
 const ChevroletLogo = ({ className }: LogoProps) => (
     <Image
-      src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Chevrolet-logo.png/1200px-Chevrolet-logo.png"
+      src="https://res.cloudinary.com/dbm1benv0/image/upload/v1722285008/haraj-yemen-logos/chevrolet_logo.png"
       alt="Chevrolet Logo"
       width={1200}
       height={311}

@@ -20,13 +20,13 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CAR_MAKES, CAR_MODELS, CAR_YEARS, CAR_FEATURES, CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET, YEMENI_GOVERNORATES } from '@/lib/constants';
 import { generateCarDescription } from '@/lib/actions';
-import { Wand2, Loader2 } from 'lucide-react';
+import { Wand2, Loader2, Save, Edit } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useUser, useFirestore } from '@/firebase';
 import Link from 'next/link';
-import { collection, addDoc, doc, getDoc, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, doc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import Image from 'next/image';
 
@@ -55,8 +55,12 @@ export default function ListingForm() {
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const { toast } = useToast();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
+
+  const editId = searchParams.get('edit');
+  const isEditing = !!editId;
 
   const form = useForm<ListingFormValues>({
     resolver: zodResolver(listingFormSchema),
@@ -78,9 +82,49 @@ export default function ListingForm() {
   useEffect(() => {
     // This is a cleanup function that will run when the component unmounts.
     return () => {
-      imagePreviews.forEach(url => URL.revokeObjectURL(url));
+      imagePreviews.forEach(url => {
+        if (url.startsWith('blob:')) {
+          URL.revokeObjectURL(url)
+        }
+      });
     };
   }, [imagePreviews]);
+
+  useEffect(() => {
+    if (isEditing && firestore && user) {
+        const fetchListing = async () => {
+            const docRef = doc(firestore, "carListings", editId!);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                if (data.userId === user.uid) {
+                    form.reset({
+                        make: data.make,
+                        model: data.model,
+                        year: String(data.year),
+                        price: String(data.price),
+                        currency: data.currency,
+                        mileage: String(data.mileage),
+                        location: data.location,
+                        condition: data.condition,
+                        description: data.description,
+                        features: data.features || [],
+                        sellerNotes: data.sellerNotes || '',
+                    });
+                    setImagePreviews(data.images || []);
+                } else {
+                    toast({ variant: "destructive", title: "غير مصرح به", description: "ليس لديك إذن لتعديل هذا الإعلان." });
+                    router.push('/dashboard');
+                }
+            } else {
+                toast({ variant: "destructive", title: "لم يتم العثور عليه", description: "الإعلان غير موجود." });
+                router.push('/dashboard');
+            }
+        };
+        fetchListing();
+    }
+  }, [isEditing, editId, firestore, user, form, router, toast]);
 
   const selectedMake = form.watch('make');
 
@@ -91,7 +135,11 @@ export default function ListingForm() {
       setImageFiles(fileArray);
       
       // Clean up previous previews before creating new ones
-      imagePreviews.forEach(url => URL.revokeObjectURL(url));
+      imagePreviews.forEach(url => {
+        if (url.startsWith('blob:')) {
+          URL.revokeObjectURL(url)
+        }
+      });
 
       const previewArray = fileArray.map(file => URL.createObjectURL(file));
       setImagePreviews(previewArray);
@@ -143,49 +191,35 @@ export default function ListingForm() {
     setStatus("");
     
     try {
-        // Fetch user profile to denormalize data
-        const userProfileRef = doc(firestore, 'users', user.uid);
-        const userProfileSnap = await getDoc(userProfileRef);
+        let finalImageUrls: string[] = [];
 
-        if (!userProfileSnap.exists()) {
-            throw new Error("لم يتم العثور على ملفك الشخصي. لا يمكن إنشاء الإعلان.");
-        }
-        const userProfile = userProfileSnap.data();
-
-        let imageUrls: string[] = [];
         if (imageFiles.length > 0) {
             setStatus(`جاري رفع ${imageFiles.length} ${imageFiles.length > 1 ? 'صور' : 'صورة'}...`);
-            
             const uploadPromises = imageFiles.map(file => {
                 const formData = new FormData();
                 formData.append("file", file);
                 formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
 
-                return fetch(
-                    `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
-                    { method: "POST", body: formData }
-                ).then(res => res.json());
+                return fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, { method: "POST", body: formData })
+                    .then(res => res.json());
             });
-
             const uploadResults = await Promise.all(uploadPromises);
-            
-            imageUrls = uploadResults.map(result => {
+            finalImageUrls = uploadResults.map(result => {
                 if (!result.secure_url) {
                     throw new Error(result.error?.message || "فشل أحد الصور في الرفع إلى Cloudinary.");
                 }
                 return result.secure_url;
             });
+        } else if (isEditing) {
+            finalImageUrls = imagePreviews;
         } else {
-            imageUrls = PlaceHolderImages.filter(img => !img.id.startsWith('avatar-'))
-                                          .sort(() => 0.5 - Math.random())
-                                          .slice(0, 3)
-                                          .map(img => img.imageUrl);
+            finalImageUrls = PlaceHolderImages.filter(img => !img.id.startsWith('avatar-'))
+                                               .sort(() => 0.5 - Math.random())
+                                               .slice(0, 3)
+                                               .map(img => img.imageUrl);
         }
 
-        setStatus("جاري الحفظ في قاعدة البيانات...");
-        const carListingsRef = collection(firestore, 'carListings');
-        const newListingData = {
-            userId: user.uid,
+        const listingData = {
             title: `${data.year} ${data.make} ${data.model}`,
             make: data.make,
             model: data.model,
@@ -193,24 +227,43 @@ export default function ListingForm() {
             price: parseInt(data.price, 10),
             currency: data.currency,
             description: data.description || '',
-            images: imageUrls,
+            images: finalImageUrls,
             mileage: parseInt(data.mileage, 10),
             location: data.location,
             condition: data.condition,
             features: data.features,
-            status: 'active',
-            createdAt: serverTimestamp(),
             updatedAt: serverTimestamp(),
-            viewCount: 0,
-            // Denormalized seller data for public display
-            sellerName: userProfile.name,
-            sellerPhoneNumber: userProfile.phoneNumber,
-            sellerPhotoURL: userProfile.photoURL || null,
-            sellerJoinedAt: userProfile.createdAt,
         };
 
-        await addDoc(carListingsRef, newListingData);
-        toast({ title: 'تم إنشاء القائمة', description: 'تم إنشاء قائمتك بنجاح!' });
+        if (isEditing) {
+            setStatus("جاري تحديث الإعلان...");
+            const docRef = doc(firestore, 'carListings', editId!);
+            await updateDoc(docRef, listingData);
+            toast({ title: 'تم تحديث الإعلان', description: 'تم تحديث إعلانك بنجاح!' });
+        } else {
+            setStatus("جاري إنشاء الإعلان...");
+            const userProfileRef = doc(firestore, 'users', user.uid);
+            const userProfileSnap = await getDoc(userProfileRef);
+
+            if (!userProfileSnap.exists()) {
+                throw new Error("لم يتم العثور على ملفك الشخصي. لا يمكن إنشاء الإعلان.");
+            }
+            const userProfile = userProfileSnap.data();
+
+            const newListingData = {
+                ...listingData,
+                userId: user.uid,
+                status: 'active',
+                createdAt: serverTimestamp(),
+                viewCount: 0,
+                sellerName: userProfile.name,
+                sellerPhoneNumber: userProfile.phoneNumber,
+                sellerPhotoURL: userProfile.photoURL || null,
+                sellerJoinedAt: userProfile.createdAt,
+            };
+            await addDoc(collection(firestore, 'carListings'), newListingData);
+            toast({ title: 'تم إنشاء الإعلان', description: 'تم إنشاء قائمتك بنجاح!' });
+        }
         router.push('/dashboard');
 
     } catch (err: any) {
@@ -264,7 +317,7 @@ export default function ListingForm() {
                   <Select onValueChange={(value) => {
                     field.onChange(value);
                     form.setValue('model', '');
-                  }} defaultValue={field.value}>
+                  }} value={field.value}>
                     <FormControl>
                       <SelectTrigger><SelectValue placeholder="اختر الشركة المصنعة" /></SelectTrigger>
                     </FormControl>
@@ -296,7 +349,7 @@ export default function ListingForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>السنة</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger><SelectValue placeholder="اختر السنة" /></SelectTrigger>
                     </FormControl>
@@ -338,7 +391,7 @@ export default function ListingForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>العملة</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger><SelectValue placeholder="اختر العملة" /></SelectTrigger>
                     </FormControl>
@@ -358,7 +411,7 @@ export default function ListingForm() {
               render={({ field }) => (
                 <FormItem className="md:col-span-2">
                   <FormLabel>الموقع</FormLabel>
-                   <Select onValueChange={field.onChange} defaultValue={field.value}>
+                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger><SelectValue placeholder="اختر الموقع" /></SelectTrigger>
                     </FormControl>
@@ -411,7 +464,7 @@ export default function ListingForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>الحالة</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger><SelectValue placeholder="اختر حالة السيارة" /></SelectTrigger>
                     </FormControl>
@@ -498,12 +551,10 @@ export default function ListingForm() {
         </Card>
 
         <Button type="submit" size="lg" className="w-full md:w-auto" disabled={isSubmitting}>
-           {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-           {isSubmitting ? (status || 'جاري الإرسال...') : 'إنشاء الإعلان'}
+           {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : (isEditing ? <Edit className="mr-2 h-4 w-4" /> : <Save className="mr-2 h-4 w-4" />)}
+           {isSubmitting ? (status || 'جاري الإرسال...') : (isEditing ? 'تحديث الإعلان' : 'إنشاء الإعلان')}
         </Button>
       </form>
     </Form>
   );
 }
-
-    

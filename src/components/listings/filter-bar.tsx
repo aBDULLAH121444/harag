@@ -82,7 +82,7 @@ export default function FilterBar() {
     <Card className="mb-8 shadow-sm">
         <CardContent className="p-4 space-y-4">
             <ScrollArea className="w-full whitespace-nowrap">
-                <div className="flex w-max space-x-2 space-x-reverse pb-4">
+                <div className="flex w-max gap-2 pb-4">
                     <Button 
                         variant={!selectedMake ? 'default' : 'outline'}
                         onClick={() => setSelectedMake('')}

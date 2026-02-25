@@ -83,12 +83,6 @@ export default function FilterBar() {
         <CardContent className="p-4 space-y-4">
             <ScrollArea className="w-full whitespace-nowrap">
                 <div className="flex w-max gap-2 pb-4">
-                    <Button 
-                        variant={!selectedMake ? 'default' : 'outline'}
-                        onClick={() => setSelectedMake('')}
-                    >
-                        الكل
-                    </Button>
                     {CAR_MAKES.map((make) => (
                         <Button
                             key={make}
@@ -99,6 +93,12 @@ export default function FilterBar() {
                             {make}
                         </Button>
                     ))}
+                    <Button 
+                        variant={!selectedMake ? 'default' : 'outline'}
+                        onClick={() => setSelectedMake('')}
+                    >
+                        الكل
+                    </Button>
                 </div>
                 <ScrollBar orientation="horizontal" />
             </ScrollArea>

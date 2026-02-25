@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Car, Loader2, AlertTriangle } from "lucide-react";
+import { Car, Loader2, AlertTriangle, UserPlus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth, useFirestore } from "@/firebase";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
@@ -69,7 +69,7 @@ export default function SignupPage() {
             };
             await setDoc(userDocRef, userProfile);
 
-            toast({ title: "تم إنشاء الحساب بنجاح!" });
+            toast({ title: "تم تسجيل الحساب بنجاح!" });
             router.push('/dashboard');
 
         } catch (error) {
@@ -80,7 +80,7 @@ export default function SignupPage() {
                     description = "هذا الرقم مسجل بالفعل. حاول تسجيل الدخول.";
                 }
             }
-            toast({ variant: "destructive", title: "فشل إنشاء الحساب", description });
+            toast({ variant: "destructive", title: "فشل تسجيل الحساب", description });
         } finally {
             setIsSubmitting(false);
         }
@@ -93,7 +93,7 @@ export default function SignupPage() {
              <Link href="/" className="flex items-center justify-center gap-2 mb-4">
                 <Car className="h-10 w-10 text-primary" />
             </Link>
-            <CardTitle className="text-2xl font-headline">إنشاء حساب جديد</CardTitle>
+            <CardTitle className="text-2xl font-headline">تسجيل حساب جديد</CardTitle>
             <CardDescription>
                 املأ معلوماتك لإنشاء حساب
             </CardDescription>
@@ -166,8 +166,11 @@ export default function SignupPage() {
                     </Alert>
 
                     <Button type="submit" className="w-full" disabled={isSubmitting}>
-                        {isSubmitting && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
-                        إنشاء حساب
+                        {isSubmitting ? 
+                            <Loader2 className="ml-2 h-4 w-4 animate-spin" /> : 
+                            <UserPlus className="ml-2 h-4 w-4" />
+                        }
+                        {isSubmitting ? 'جاري التسجيل...' : 'تسجيل'}
                     </Button>
                 </form>
             </Form>

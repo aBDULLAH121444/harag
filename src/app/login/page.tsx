@@ -112,7 +112,7 @@ export default function LoginPage() {
                     <div className="mt-4 text-center text-sm">
                         ليس لديك حساب؟{" "}
                         <Link href="/signup" className="underline">
-                            إنشاء حساب
+                            سجل الآن
                         </Link>
                     </div>
                 </CardContent>

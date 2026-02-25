@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Car, PlusCircle, LogOut, LayoutDashboard } from 'lucide-react';
+import { Car, PlusCircle, LogOut, LayoutDashboard, UserPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useUser, useAuth } from '@/firebase';
 import { signOut } from 'firebase/auth';
@@ -45,57 +45,58 @@ export function Header() {
           </span>
         </Link>
         <nav className="flex items-center gap-2 sm:gap-4">
-          <Button asChild className="bg-accent hover:bg-accent/90 text-accent-foreground">
-            <Link href="/sell">
-              <PlusCircle className="ml-2 h-4 w-4" />
-              بع سيارتك
-            </Link>
-          </Button>
-
           {isUserLoading ? (
-            <div className="flex items-center gap-2">
-              <Skeleton className="h-10 w-20" />
-              <Skeleton className="h-10 w-24" />
-            </div>
+            <Skeleton className="h-10 w-28" />
           ) : user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                  <Avatar className="h-10 w-10">
-                    {user.photoURL && <AvatarImage src={user.photoURL} alt={user.displayName || ''} />}
-                    <AvatarFallback>{getInitials(user.displayName)}</AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
-                <DropdownMenuLabel className="font-normal">
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">{user.displayName}</p>
-                    <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
-                  </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href="/dashboard">
-                    <LayoutDashboard className="mr-2 h-4 w-4" />
-                    <span>لوحة التحكم</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleSignOut}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>تسجيل الخروج</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <>
+              <Button asChild className="bg-accent hover:bg-accent/90 text-accent-foreground">
+                <Link href="/sell">
+                  <PlusCircle className="ml-2 h-4 w-4" />
+                  أضف إعلان
+                </Link>
+              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                    <Avatar className="h-10 w-10">
+                      {user.photoURL && <AvatarImage src={user.photoURL} alt={user.displayName || ''} />}
+                      <AvatarFallback>{getInitials(user.displayName)}</AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="end" forceMount>
+                  <DropdownMenuLabel className="font-normal">
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium leading-none">{user.displayName}</p>
+                      <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="/dashboard">
+                      <LayoutDashboard className="mr-2 h-4 w-4" />
+                      <span>لوحة التحكم</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleSignOut}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>تسجيل الخروج</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </>
           ) : (
-            <div className="items-center gap-2 hidden md:flex">
-              <Button variant="outline" asChild>
-                <Link href="/login">تسجيل الدخول</Link>
-              </Button>
-              <Button asChild>
-                <Link href="/signup">إنشاء حساب</Link>
-              </Button>
+            <div className="flex items-center gap-2">
+                <Button asChild>
+                  <Link href="/signup">
+                    <UserPlus className="ml-2 h-4 w-4" />
+                    سجل
+                  </Link>
+                </Button>
+                <Button variant="outline" asChild>
+                  <Link href="/login">تسجيل الدخول</Link>
+                </Button>
             </div>
           )}
         </nav>

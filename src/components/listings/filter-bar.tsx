@@ -56,16 +56,16 @@ export default function FilterBar() {
                 <Skeleton className="h-10 w-16" />
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-                <div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
+                <div className="lg:col-span-2">
                     <Skeleton className="h-5 w-16 mb-1" />
                     <Skeleton className="h-10 w-full" />
                 </div>
-                <div>
+                <div className="lg:col-span-2">
                     <Skeleton className="h-5 w-12 mb-1" />
                     <Skeleton className="h-10 w-full" />
                 </div>
-                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full sm:col-span-2 lg:col-span-1" />
             </div>
         </CardContent>
       </Card>
@@ -75,30 +75,33 @@ export default function FilterBar() {
   return (
     <Card className="mb-8 shadow-sm">
         <CardContent className="p-4 space-y-4">
-            <ScrollArea className="w-full whitespace-nowrap">
-                <div className="flex w-max gap-2 pb-4">
-                    <Button 
-                        variant={!selectedMake ? 'default' : 'outline'}
-                        onClick={() => setSelectedMake('')}
-                    >
-                        الكل
-                    </Button>
-                    {CAR_MAKES.map((make) => (
-                        <Button
-                            key={make}
-                            variant={selectedMake === make ? 'default' : 'outline'}
-                            onClick={() => setSelectedMake(make)}
-                            className="whitespace-nowrap"
-                        >
-                            {make}
-                        </Button>
-                    ))}
-                </div>
-                <ScrollBar orientation="horizontal" />
-            </ScrollArea>
+            <div className="flex items-center gap-4">
+                <Button 
+                    variant={!selectedMake ? 'default' : 'outline'}
+                    onClick={() => setSelectedMake('')}
+                    className="shrink-0"
+                >
+                    الكل
+                </Button>
+                <ScrollArea className="flex-grow whitespace-nowrap">
+                    <div className="flex w-max gap-2 pb-4">
+                        {CAR_MAKES.map((make) => (
+                            <Button
+                                key={make}
+                                variant={selectedMake === make ? 'default' : 'outline'}
+                                onClick={() => setSelectedMake(make)}
+                                className="whitespace-nowrap"
+                            >
+                                {make}
+                            </Button>
+                        ))}
+                    </div>
+                    <ScrollBar orientation="horizontal" />
+                </ScrollArea>
+            </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-                <div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
+                <div className="lg:col-span-2">
                      <label className="text-sm font-medium text-muted-foreground">الموديل</label>
                     <Select value={selectedModel} onValueChange={setSelectedModel} disabled={!selectedMake}>
                         <SelectTrigger>
@@ -113,7 +116,7 @@ export default function FilterBar() {
                         </SelectContent>
                     </Select>
                 </div>
-                <div>
+                <div className="lg:col-span-2">
                      <label className="text-sm font-medium text-muted-foreground">السنة</label>
                     <Select value={selectedYear} onValueChange={(val) => setSelectedYear(val === 'all' ? '' : val)}>
                         <SelectTrigger>
@@ -129,7 +132,7 @@ export default function FilterBar() {
                         </SelectContent>
                     </Select>
                 </div>
-                <Button className="w-full" onClick={handleSearch}>
+                <Button className="w-full sm:col-span-2 lg:col-span-1" onClick={handleSearch}>
                     <Search className="ml-2 h-4 w-4" />
                     بحث
                 </Button>

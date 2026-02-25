@@ -132,10 +132,10 @@ export default function DashboardPage() {
             <div className="container mx-auto px-4 py-12">
                 <div className="mb-8">
                     <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-primary font-headline">
-                        لوحة التحكم الخاصة بي
+                        اعلاناتي
                     </h1>
                     <p className="mt-2 text-lg text-muted-foreground">
-                        إدارة قوائم سياراتك وإعدادات حسابك.
+                        إدارة إعلانات سياراتك المنشورة.
                     </p>
                 </div>
                 

@@ -28,18 +28,19 @@ export const CarBrandLogo = ({ brand, className }: CarBrandLogoProps) => {
   const logoData = logoId ? logoMap.get(logoId) : undefined;
 
   if (!logoData) {
-    return <span className={cn("text-sm font-bold", className)}>{brand}</span>;
+    return <span className={cn("text-xs font-bold", className)}>{brand}</span>;
   }
 
   return (
-    <Image
-      src={logoData.imageUrl}
-      alt={logoData.description}
-      width={160}
-      height={80}
-      className={cn("h-full w-auto object-contain", className)}
-      data-ai-hint={logoData.imageHint}
-      unoptimized // To ensure Cloudinary transformations don't conflict with next/image if URLs are direct
-    />
+    <div className={cn("relative h-full w-full flex items-center justify-center overflow-hidden", className)}>
+      <Image
+        src={logoData.imageUrl}
+        alt={logoData.description}
+        fill
+        className="object-contain p-0.5"
+        data-ai-hint={logoData.imageHint}
+        unoptimized 
+      />
+    </div>
   );
 };

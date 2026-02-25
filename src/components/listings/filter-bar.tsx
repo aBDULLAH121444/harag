@@ -107,7 +107,7 @@ export default function FilterBar() {
                                   )}
                                 />
                                 {selectedMake === make && (
-                                  <div className="absolute bottom-0.5 right-0.5">
+                                  <div className="absolute bottom-0.5 right-0.5 z-10">
                                     <div className="h-1.5 w-1.5 rounded-full bg-primary" />
                                   </div>
                                 )}

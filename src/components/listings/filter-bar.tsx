@@ -8,6 +8,7 @@ import { Search } from 'lucide-react';
 import React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 export default function FilterBar() {
   const router = useRouter();
@@ -49,15 +50,12 @@ export default function FilterBar() {
     return (
       <Card className="mb-8 shadow-sm">
         <CardContent className="p-4 space-y-4">
-            <div className="space-y-2">
-                <Skeleton className="h-5 w-24 mb-2" />
-                <div className="flex flex-wrap gap-2">
-                    <Skeleton className="h-10 w-16" />
-                    <Skeleton className="h-10 w-24" />
-                    <Skeleton className="h-10 w-24" />
-                    <Skeleton className="h-10 w-32" />
-                    <Skeleton className="h-10 w-28" />
-                </div>
+            <div className="flex gap-2 overflow-hidden">
+                <Skeleton className="h-10 w-16" />
+                <Skeleton className="h-10 w-24" />
+                <Skeleton className="h-10 w-24" />
+                <Skeleton className="h-10 w-32" />
+                <Skeleton className="h-10 w-28" />
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
@@ -83,9 +81,8 @@ export default function FilterBar() {
   return (
     <Card className="mb-8 shadow-sm">
         <CardContent className="p-4 space-y-4">
-            <div>
-                <label className="text-sm font-medium text-muted-foreground mb-2 block">الشركة المصنعة</label>
-                <div className="flex flex-wrap gap-2">
+            <ScrollArea className="w-full whitespace-nowrap">
+                <div className="flex w-max space-x-2 space-x-reverse pb-4">
                     <Button 
                         variant={!selectedMake ? 'default' : 'outline'}
                         onClick={() => setSelectedMake('')}
@@ -97,12 +94,14 @@ export default function FilterBar() {
                             key={make}
                             variant={selectedMake === make ? 'default' : 'outline'}
                             onClick={() => setSelectedMake(make)}
+                            className="whitespace-nowrap"
                         >
                             {make}
                         </Button>
                     ))}
                 </div>
-            </div>
+                <ScrollBar orientation="horizontal" />
+            </ScrollArea>
             
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                 <div className="md:col-span-1">

@@ -138,7 +138,6 @@ export default function DashboardPage() {
                 
                 <Card>
                     <CardHeader>
-                        <CardTitle>قوائمي</CardTitle>
                         <CardDescription>لديك {userListings.length} من القوائم.</CardDescription>
                     </CardHeader>
                     <CardContent>

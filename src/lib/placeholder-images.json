@@ -59,6 +59,60 @@
       "description": "User avatar",
       "imageUrl": "https://images.unsplash.com/photo-1557053908-4793c484d06f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc3MTgzNTc1N3ww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "woman portrait"
+    },
+    {
+      "id": "logo-toyota",
+      "description": "Toyota Logo",
+      "imageUrl": "https://res.cloudinary.com/dbm1benv0/image/upload/v1722285000/haraj-yemen-logos/toyota_logo.png",
+      "imageHint": "toyota logo"
+    },
+    {
+      "id": "logo-hyundai",
+      "description": "Hyundai Logo",
+      "imageUrl": "https://res.cloudinary.com/dbm1benv0/image/upload/v1722285001/haraj-yemen-logos/hyundai_logo.png",
+      "imageHint": "hyundai logo"
+    },
+    {
+      "id": "logo-ford",
+      "description": "Ford Logo",
+      "imageUrl": "https://res.cloudinary.com/dbm1benv0/image/upload/v1722285002/haraj-yemen-logos/ford_logo.png",
+      "imageHint": "ford logo"
+    },
+    {
+      "id": "logo-mercedes-benz",
+      "description": "Mercedes-Benz Logo",
+      "imageUrl": "https://res.cloudinary.com/dbm1benv0/image/upload/v1722285003/haraj-yemen-logos/mercedes_logo.png",
+      "imageHint": "mercedes logo"
+    },
+    {
+      "id": "logo-bmw",
+      "description": "BMW Logo",
+      "imageUrl": "https://res.cloudinary.com/dbm1benv0/image/upload/v1722285004/haraj-yemen-logos/bmw_logo.png",
+      "imageHint": "bmw logo"
+    },
+    {
+      "id": "logo-nissan",
+      "description": "Nissan Logo",
+      "imageUrl": "https://res.cloudinary.com/dbm1benv0/image/upload/v1722285005/haraj-yemen-logos/nissan_logo.png",
+      "imageHint": "nissan logo"
+    },
+    {
+      "id": "logo-kia",
+      "description": "Kia Logo",
+      "imageUrl": "https://res.cloudinary.com/dbm1benv0/image/upload/v1722285006/haraj-yemen-logos/kia_logo.png",
+      "imageHint": "kia logo"
+    },
+    {
+      "id": "logo-lexus",
+      "description": "Lexus Logo",
+      "imageUrl": "https://res.cloudinary.com/dbm1benv0/image/upload/v1722285007/haraj-yemen-logos/lexus_logo.png",
+      "imageHint": "lexus logo"
+    },
+    {
+      "id": "logo-chevrolet",
+      "description": "Chevrolet Logo",
+      "imageUrl": "https://res.cloudinary.com/dbm1benv0/image/upload/v1722285008/haraj-yemen-logos/chevrolet_logo.png",
+      "imageHint": "chevrolet logo"
     }
   ]
 }

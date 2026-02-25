@@ -7,23 +7,25 @@ type LogoProps = {
   className?: string;
 };
 
+// Use a darker logo for better visibility
 const ToyotaLogo = ({ className }: LogoProps) => (
   <Image
-    src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Toyota_EU.svg/2560px-Toyota_EU.svg.png"
+    src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Toyota_T_emblem.svg/1200px-Toyota_T_emblem.svg.png"
     alt="Toyota Logo"
     width={100}
-    height={67}
+    height={100}
     className={className}
     priority
   />
 );
 
+// Use a more visible logo
 const HyundaiLogo = ({ className }: LogoProps) => (
     <Image
-        src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Hyundai_motor_company_logo.svg/2560px-Hyundai_motor_company_logo.svg.png"
+        src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Hyundai_logo.png/600px-Hyundai_logo.png"
         alt="Hyundai Logo"
-        width={2560}
-        height={667}
+        width={1280}
+        height={333}
         className={className}
         priority
     />
@@ -40,9 +42,10 @@ const FordLogo = ({ className }: LogoProps) => (
   />
 );
 
+// Use a darker logo for better visibility
 const MercedesLogo = ({ className }: LogoProps) => (
     <Image
-      src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Mercedes-Benz_Logo_2010.svg/1200px-Mercedes-Benz_Logo_2010.svg.png"
+      src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/Mercedes-Benz_logo_content.svg/1200px-Mercedes-Benz_logo_content.svg.png"
       alt="Mercedes-Benz Logo"
       width={100}
       height={100}
@@ -62,20 +65,22 @@ const BMWLogo = ({ className }: LogoProps) => (
     />
 );
 
+// Use a darker logo for better visibility
 const NissanLogo = ({ className }: LogoProps) => (
     <Image
-      src="https://upload.wikimedia.org/wikipedia/commons/6/67/Nissan-logo.png"
+      src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Nissan_logo.svg/1280px-Nissan_logo.svg.png"
       alt="Nissan Logo"
-      width={1016}
-      height={250}
+      width={1280}
+      height={293}
       className={className}
       priority
     />
 );
 
+// Use a larger, clearer version
 const KiaLogo = ({ className }: LogoProps) => (
     <Image
-      src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Kia_logo_2.svg/320px-Kia_logo_2.svg.png"
+      src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Kia_logo_2.svg/2560px-Kia_logo_2.svg.png"
       alt="Kia Logo"
       width={320}
       height={63}
@@ -84,9 +89,10 @@ const KiaLogo = ({ className }: LogoProps) => (
     />
 );
 
+// Use a darker logo for better visibility
 const LexusLogo = ({ className }: LogoProps) => (
     <Image
-      src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Lexus_Logo.svg/320px-Lexus_Logo.svg.png"
+      src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Lexus_logo.svg/1280px-Lexus_logo.svg.png"
       alt="Lexus Logo"
       width={320}
       height={228}

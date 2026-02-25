@@ -20,4 +20,5 @@ export type Car = {
   };
   postedAt: Date;
   condition: 'جديد' | 'شبه جديد' | 'جيد' | 'مقبول';
+  status: string;
 };

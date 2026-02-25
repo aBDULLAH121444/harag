@@ -40,6 +40,7 @@ function docToCar(docSnap: any): Car {
         },
         postedAt: (data.createdAt as Timestamp)?.toDate() || new Date(),
         condition: data.condition,
+        status: data.status,
     };
 }
 
@@ -104,11 +105,11 @@ export async function getUserListings(userId: string): Promise<Car[]> {
     if (!userId) return [];
     
     const carListingsRef = collection(db, 'carListings');
-    const q = query(carListingsRef, where('userId', '==', userId), where('status', '==', 'active'));
+    const q = query(carListingsRef, where('userId', '==', userId));
 
     try {
         const snapshot = await getDocs(q);
-        const listings = snapshot.docs.map(docToCar);
+        const listings = snapshot.docs.map(docToCar).filter(car => car.status === 'active');
         // Sort listings by date descending (newest first)
         listings.sort((a, b) => b.postedAt.getTime() - a.postedAt.getTime());
         return listings;

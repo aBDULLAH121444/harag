@@ -69,13 +69,13 @@
     {
       "id": "logo-hyundai",
       "description": "Hyundai Logo",
-      "imageUrl": "https://logos-world.net/wp-content/uploads/2020/04/Hyundai-Logo.png",
+      "imageUrl": "https://res.cloudinary.com/dbm1benv0/image/upload/v1721833509/hyundai-logo_v0wxk1.png",
       "imageHint": "hyundai logo"
     },
     {
       "id": "logo-ford",
       "description": "Ford Logo",
-      "imageUrl": "https://logos-world.net/wp-content/uploads/2020/04/Ford-Logo.png",
+      "imageUrl": "https://res.cloudinary.com/dbm1benv0/image/upload/v1721833509/ford-logo_t93cbx.png",
       "imageHint": "ford logo"
     },
     {
@@ -99,13 +99,13 @@
     {
       "id": "logo-kia",
       "description": "Kia Logo",
-      "imageUrl": "https://logos-world.net/wp-content/uploads/2021/04/Kia-Logo-present.png",
+      "imageUrl": "https://res.cloudinary.com/dbm1benv0/image/upload/v1721833509/kia-logo_w7veaq.png",
       "imageHint": "kia logo"
     },
     {
       "id": "logo-lexus",
       "description": "Lexus Logo",
-      "imageUrl": "https://logos-world.net/wp-content/uploads/2020/05/Lexus-Logo.png",
+      "imageUrl": "https://res.cloudinary.com/dbm1benv0/image/upload/v1721833509/lexus-logo_gmp6pg.png",
       "imageHint": "lexus logo"
     },
     {

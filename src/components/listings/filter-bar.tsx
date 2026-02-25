@@ -9,6 +9,8 @@ import React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { CarBrandLogo } from './car-brand-logos';
+import { cn } from '@/lib/utils';
 
 export default function FilterBar() {
   const router = useRouter();
@@ -44,20 +46,29 @@ export default function FilterBar() {
     router.push(`/?${params.toString()}`);
   };
 
+  const handleMakeSelection = (make: string) => {
+    if (selectedMake === make) {
+      setSelectedMake(''); // Deselect if clicked again
+    } else {
+      setSelectedMake(make);
+    }
+  };
+
   if (!isMounted) {
     return (
       <Card className="mb-8 shadow-sm">
         <CardContent className="p-4 space-y-4">
-            <div className="flex gap-2 overflow-hidden">
-                <Skeleton className="h-10 w-24" />
-                <Skeleton className="h-10 w-24" />
-                <Skeleton className="h-10 w-32" />
-                <Skeleton className="h-10 w-28" />
-                <Skeleton className="h-10 w-16" />
+            <div className="flex gap-3 overflow-hidden pb-4">
+                <Skeleton className="h-14 w-24 flex-shrink-0" />
+                <Skeleton className="h-14 w-24 flex-shrink-0" />
+                <Skeleton className="h-14 w-24 flex-shrink-0" />
+                <Skeleton className="h-14 w-24 flex-shrink-0" />
+                <Skeleton className="h-14 w-24 flex-shrink-0" />
+                <Skeleton className="h-14 w-24 flex-shrink-0" />
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
-                <div className="lg:col-span-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-end">
+                <div>
                     <Skeleton className="h-5 w-16 mb-1" />
                     <Skeleton className="h-10 w-full" />
                 </div>
@@ -65,7 +76,7 @@ export default function FilterBar() {
                     <Skeleton className="h-5 w-12 mb-1" />
                     <Skeleton className="h-10 w-full" />
                 </div>
-                <Skeleton className="h-10 w-full sm:col-span-2 lg:col-span-1" />
+                <Skeleton className="h-10 w-full" />
             </div>
         </CardContent>
       </Card>
@@ -75,32 +86,41 @@ export default function FilterBar() {
   return (
     <Card className="mb-8 shadow-sm">
         <CardContent className="p-4 space-y-4">
-            <div className="flex items-center gap-4">
-                <ScrollArea className="flex-grow whitespace-nowrap" dir="ltr">
-                    <div className="flex w-max gap-2 pb-4">
+            <div>
+                <ScrollArea className="w-full whitespace-nowrap" dir="ltr">
+                    <div className="flex w-max gap-3 pb-4">
                         <Button 
                             variant={!selectedMake ? 'default' : 'outline'}
-                            onClick={() => setSelectedMake('')}
+                            onClick={() => handleMakeSelection('')}
+                            className="h-14 px-6 flex-shrink-0"
                         >
                             الكل
                         </Button>
                         {CAR_MAKES.map((make) => (
-                            <Button
+                             <button
                                 key={make}
-                                variant={selectedMake === make ? 'default' : 'outline'}
-                                onClick={() => setSelectedMake(make)}
-                                className="whitespace-nowrap"
+                                onClick={() => handleMakeSelection(make)}
+                                className={cn(
+                                    "p-2 h-14 w-24 flex items-center justify-center rounded-md border transition-all duration-200 flex-shrink-0 group",
+                                    selectedMake === make 
+                                        ? "ring-2 ring-primary bg-primary/5" 
+                                        : "bg-card hover:bg-muted"
+                                )}
+                                title={make}
                             >
-                                {make}
-                            </Button>
+                                <CarBrandLogo brand={make} className={cn(
+                                    "h-8 w-auto text-foreground/70 transition-all group-hover:text-foreground",
+                                    selectedMake === make && "text-primary"
+                                )}/>
+                            </button>
                         ))}
                     </div>
                     <ScrollBar orientation="horizontal" />
                 </ScrollArea>
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
-                <div className="lg:col-span-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-end">
+                <div>
                      <label className="text-sm font-medium text-muted-foreground">الموديل</label>
                     <Select value={selectedModel} onValueChange={setSelectedModel} disabled={!selectedMake}>
                         <SelectTrigger>
@@ -131,7 +151,7 @@ export default function FilterBar() {
                         </SelectContent>
                     </Select>
                 </div>
-                <Button className="w-full sm:col-span-2 lg:col-span-1" onClick={handleSearch}>
+                <Button className="w-full" onClick={handleSearch}>
                     <Search className="ml-2 h-4 w-4" />
                     بحث
                 </Button>

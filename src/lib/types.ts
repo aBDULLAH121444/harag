@@ -15,6 +15,7 @@ export type Car = {
   seller: {
     name: string;
     avatarUrl?: string;
+    phoneNumber?: string;
   };
   postedAt: Date;
   condition: 'جديد' | 'شبه جديد' | 'جيد' | 'مقبول';

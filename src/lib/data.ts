@@ -35,6 +35,7 @@ function docToCar(docSnap: any): Car {
         seller: {
             name: 'مستخدم غير معروف',
             avatarUrl: undefined,
+            phoneNumber: undefined,
         },
         postedAt: (data.createdAt as Timestamp)?.toDate() || new Date(),
         condition: data.condition,
@@ -99,6 +100,7 @@ export async function getListingById(id: string): Promise<Car | undefined> {
             const userData = userProfileSnap.data();
             car.seller.name = userData.name || 'مستخدم غير معروف';
             car.seller.avatarUrl = userData.photoURL;
+            car.seller.phoneNumber = userData.phoneNumber;
         }
     } catch (e) {
         console.error(`Failed to fetch user profile for ${car.userId}:`, e);
@@ -142,5 +144,3 @@ export async function getUserProfile(userId: string) {
     }
     return null;
 }
-
-    

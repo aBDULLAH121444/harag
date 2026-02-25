@@ -10,7 +10,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { Separator } from '@/components/ui/separator';
 import { format, formatDistanceToNow } from 'date-fns';
 import { arSA } from 'date-fns/locale';
-import { Tag, Gauge, MapPin, Calendar, Wrench, CheckCircle, MessageSquare } from 'lucide-react';
+import { Tag, Gauge, MapPin, Calendar, Wrench, CheckCircle, MessageSquare, Phone } from 'lucide-react';
 
 export default async function ListingDetailPage({ params }: { params: { id: string } }) {
   const car = await getListingById(params.id);
@@ -122,6 +122,16 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
                             <p className="text-sm text-muted-foreground">عضو منذ {format(new Date(2021, 5, 1), 'MMMM yyyy', { locale: arSA })}</p>
                         </div>
                     </Link>
+                    {car.seller.phoneNumber && (
+                        <div className="mt-4">
+                            <a href={`tel:${car.seller.phoneNumber}`} className="w-full">
+                                <Button variant="outline" className="w-full">
+                                    <Phone className="ml-2 h-4 w-4" />
+                                    {car.seller.phoneNumber}
+                                </Button>
+                            </a>
+                        </div>
+                    )}
                 </CardContent>
             </Card>
             <Button size="lg" className="w-full">

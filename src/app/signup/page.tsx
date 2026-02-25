@@ -1,30 +1,31 @@
 'use client';
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Car, Loader2 } from "lucide-react";
+import { Car, Loader2, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth, useFirestore } from "@/firebase";
-import { RecaptchaVerifier, signInWithPhoneNumber, updateProfile, type ConfirmationResult } from "firebase/auth";
-import { doc, setDoc, serverTimestamp, getDoc } from "firebase/firestore";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { FirebaseError } from "firebase/app";
 
 const signupSchema = z.object({
   name: z.string().min(2, "الاسم مطلوب"),
   email: z.string().email("البريد الإلكتروني غير صالح"),
-  phoneNumber: z.string().regex(/^7[01378]\d{7}$/, "يرجى إدخال رقم هاتف يمني صالح يبدأ بـ 7 (9 أرقام)"),
+  phoneNumber: z.string().regex(/^7[01378]\d{7}$/, "يرجى إدخال رقم هاتف يمني صالح (9 أرقام تبدأ بـ 7)"),
+  password: z.string().min(6, "كلمة المرور يجب أن تكون 6 أحرف على الأقل"),
 });
 
-const otpSchema = z.object({
-  otp: z.string().min(6, "يجب أن يكون الرمز مكونًا من 6 أرقام"),
-});
+// Helper to create the fake email
+const createFakeEmailFromPhone = (phone: string) => `+967${phone}@haraj-yemen.app`;
 
 export default function SignupPage() {
     const router = useRouter();
@@ -32,104 +33,51 @@ export default function SignupPage() {
     const firestore = useFirestore();
     const { toast } = useToast();
     
-    const [step, setStep] = useState<'details' | 'otp'>('details');
-    const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [formValues, setFormValues] = useState<z.infer<typeof signupSchema> | null>(null);
     
-    const detailsForm = useForm<z.infer<typeof signupSchema>>({
+    const form = useForm<z.infer<typeof signupSchema>>({
         resolver: zodResolver(signupSchema),
-        defaultValues: { name: "", email: "", phoneNumber: "" },
+        defaultValues: { name: "", email: "", phoneNumber: "", password: "" },
     });
 
-    const otpForm = useForm<z.infer<typeof otpSchema>>({
-        resolver: zodResolver(otpSchema),
-        defaultValues: { otp: "" },
-    });
-
-    useEffect(() => {
-        if (!auth || (window as any).recaptchaVerifier) return;
-        (window as any).recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-          'size': 'invisible',
-          'callback': () => {},
-        });
-        return () => {
-            if ((window as any).recaptchaVerifier) {
-                (window as any).recaptchaVerifier.clear();
-            }
-        };
-      }, [auth]);
-
-    async function onDetailsSubmit(values: z.infer<typeof signupSchema>) {
-        if (!auth) {
+    async function onSubmit(values: z.infer<typeof signupSchema>) {
+        if (!auth || !firestore) {
             toast({ variant: "destructive", title: "خطأ في التهيئة" });
             return;
         };
         setIsSubmitting(true);
-        setFormValues(values);
 
         try {
-            const formattedPhoneNumber = `+967${values.phoneNumber}`;
-            const appVerifier = (window as any).recaptchaVerifier;
-            const confirmation = await signInWithPhoneNumber(auth, formattedPhoneNumber, appVerifier);
+            const fakeEmail = createFakeEmailFromPhone(values.phoneNumber);
             
-            setConfirmationResult(confirmation);
-            setStep('otp');
-            toast({ title: "تم إرسال الرمز", description: `تم إرسال رمز التحقق إلى ${formattedPhoneNumber}` });
-        } catch (error) {
-            console.error("Phone Sign-In Error:", error);
-            let description = "حدث خطأ غير متوقع.";
-            if (error instanceof FirebaseError) {
-                if (error.code === 'auth/invalid-phone-number') {
-                    description = "رقم الهاتف الذي أدخلته غير صالح.";
-                } else if (error.code === 'auth/too-many-requests') {
-                    description = "تم إرسال عدد كبير جدًا من الطلبات. يرجى المحاولة مرة أخرى لاحقًا.";
-                }
-            }
-            toast({ variant: "destructive", title: "فشل إرسال الرمز", description });
-        } finally {
-            setIsSubmitting(false);
-        }
-    }
-
-    async function onOtpSubmit(values: z.infer<typeof otpSchema>) {
-        if (!confirmationResult || !formValues || !firestore) {
-            toast({ variant: "destructive", title: "خطأ", description: "بيانات النموذج أو التحقق غير موجودة." });
-            return;
-        }
-        setIsSubmitting(true);
-        try {
-            const userCredential = await confirmationResult.confirm(values.otp);
+            // Step 1: Create user with fake email and password
+            const userCredential = await createUserWithEmailAndPassword(auth, fakeEmail, values.password);
             const user = userCredential.user;
             
+            // Step 2: Update Firebase Auth profile with display name
+            await updateProfile(user, { displayName: values.name });
+            
+            // Step 3: Create user profile document in Firestore
             const userDocRef = doc(firestore, "users", user.uid);
-            const userDoc = await getDoc(userDocRef);
-
-            if (!userDoc.exists()) {
-                await updateProfile(user, { displayName: formValues.name });
-                
-                const userProfile = {
-                    id: user.uid,
-                    name: formValues.name,
-                    email: formValues.email,
-                    phoneNumber: formValues.phoneNumber,
-                    createdAt: serverTimestamp(),
-                    updatedAt: serverTimestamp(),
-                };
-                await setDoc(userDocRef, userProfile);
-            }
+            const userProfile = {
+                id: user.uid,
+                name: values.name,
+                email: values.email,
+                phoneNumber: `+967${values.phoneNumber}`, // Store with country code
+                createdAt: serverTimestamp(),
+                updatedAt: serverTimestamp(),
+            };
+            await setDoc(userDocRef, userProfile);
 
             toast({ title: "تم إنشاء الحساب بنجاح!" });
             router.push('/dashboard');
 
         } catch (error) {
-            console.error("OTP Confirmation Error:", error);
+            console.error("Signup Error:", error);
             let description = "حدث خطأ غير متوقع.";
             if (error instanceof FirebaseError) {
-                if (error.code === 'auth/invalid-verification-code') {
-                    description = "رمز التحقق الذي أدخلته غير صحيح.";
-                } else if (error.code === 'auth/account-exists-with-different-credential') {
-                    description = "يوجد حساب بالفعل بهذا الرقم.";
+                if (error.code === 'auth/email-already-in-use') {
+                    description = "هذا الرقم مسجل بالفعل. حاول تسجيل الدخول.";
                 }
             }
             toast({ variant: "destructive", title: "فشل إنشاء الحساب", description });
@@ -145,17 +93,16 @@ export default function SignupPage() {
              <Link href="/" className="flex items-center justify-center gap-2 mb-4">
                 <Car className="h-10 w-10 text-primary" />
             </Link>
-            <CardTitle className="text-2xl font-headline">إنشاء حساب</CardTitle>
+            <CardTitle className="text-2xl font-headline">إنشاء حساب جديد</CardTitle>
             <CardDescription>
-            {step === 'details' ? 'أدخل معلوماتك لإنشاء حساب' : 'أدخل الرمز الذي تم إرساله إلى هاتفك'}
+                املأ معلوماتك لإنشاء حساب
             </CardDescription>
         </CardHeader>
         <CardContent>
-            {step === 'details' ? (
-            <Form {...detailsForm}>
-                <form onSubmit={detailsForm.handleSubmit(onDetailsSubmit)} className="space-y-4">
+            <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                      <FormField
-                        control={detailsForm.control}
+                        control={form.control}
                         name="name"
                         render={({ field }) => (
                         <FormItem>
@@ -168,7 +115,7 @@ export default function SignupPage() {
                         )}
                     />
                      <FormField
-                        control={detailsForm.control}
+                        control={form.control}
                         name="email"
                         render={({ field }) => (
                         <FormItem>
@@ -181,53 +128,50 @@ export default function SignupPage() {
                         )}
                     />
                     <FormField
-                        control={detailsForm.control}
+                        control={form.control}
                         name="phoneNumber"
                         render={({ field }) => (
                             <FormItem>
-                            <FormLabel>رقم الهاتف</FormLabel>
-                            <FormControl>
-                                <div className="flex items-center">
-                                    <span className="border border-l-0 rounded-r-md px-3 py-2 bg-muted text-muted-foreground">+967</span>
-                                    <Input placeholder="771234567" {...field} className="rounded-l-md rounded-r-none text-left" dir="ltr" />
-                                </div>
-                            </FormControl>
-                            <FormMessage />
+                                <FormLabel>رقم الهاتف</FormLabel>
+                                <FormControl>
+                                    <div className="flex items-center">
+                                        <span className="border border-l-0 rounded-r-md px-3 py-2 bg-muted text-muted-foreground">+967</span>
+                                        <Input placeholder="771234567" {...field} className="rounded-l-md rounded-r-none text-left" dir="ltr" />
+                                    </div>
+                                </FormControl>
+                                <FormMessage />
                             </FormItem>
                         )}
                     />
+                     <FormField
+                        control={form.control}
+                        name="password"
+                        render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>كلمة المرور</FormLabel>
+                            <FormControl>
+                                <Input type="password" placeholder="********" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                        )}
+                    />
+
+                    <Alert variant="destructive">
+                        <AlertTriangle className="h-4 w-4" />
+                        <AlertTitle className="font-semibold">تنبيه مهم</AlertTitle>
+                        <AlertDescription>
+                        رقمك الذي ستسجل به سيظهر للمشترين وهو الوسيلة للتواصل معك.
+                        </AlertDescription>
+                    </Alert>
+
                     <Button type="submit" className="w-full" disabled={isSubmitting}>
                         {isSubmitting && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
                         إنشاء حساب
                     </Button>
                 </form>
             </Form>
-            ) : (
-            <Form {...otpForm}>
-              <form onSubmit={otpForm.handleSubmit(onOtpSubmit)} className="space-y-4">
-                <FormField
-                  control={otpForm.control}
-                  name="otp"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>رمز التحقق</FormLabel>
-                      <FormControl>
-                        <Input placeholder="123456" {...field} type="number" className="text-center" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button type="submit" className="w-full" disabled={isSubmitting}>
-                  {isSubmitting && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
-                  تحقق وإنشاء الحساب
-                </Button>
-              </form>
-            </Form>
-            )}
             
-            <div id="recaptcha-container"></div>
-
             <div className="mt-4 text-center text-sm">
             هل لديك حساب بالفعل؟{" "}
             <Link href="/login" className="underline">
@@ -239,5 +183,3 @@ export default function SignupPage() {
     </div>
   )
 }
-
-    

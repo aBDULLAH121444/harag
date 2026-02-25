@@ -134,9 +134,6 @@ export default function DashboardPage() {
                     <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-primary font-headline">
                         اعلاناتي
                     </h1>
-                    <p className="mt-2 text-lg text-muted-foreground">
-                        إدارة إعلانات سياراتك المنشورة.
-                    </p>
                 </div>
                 
                 <Card>

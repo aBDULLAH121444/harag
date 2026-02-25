@@ -49,7 +49,7 @@ export function Header() {
             <Skeleton className="h-10 w-28" />
           ) : user ? (
             <>
-              <Button asChild className="bg-accent hover:bg-accent/90 text-accent-foreground">
+              <Button asChild size="sm" className="bg-accent hover:bg-accent/90 text-accent-foreground">
                 <Link href="/sell">
                   <PlusCircle className="ml-2 h-4 w-4" />
                   أضف إعلان
@@ -88,13 +88,13 @@ export function Header() {
             </>
           ) : (
             <div className="flex items-center gap-2">
-                <Button asChild>
+                <Button asChild size="sm">
                   <Link href="/signup">
                     <UserPlus className="ml-2 h-4 w-4" />
                     سجل
                   </Link>
                 </Button>
-                <Button variant="outline" asChild>
+                <Button variant="outline" size="sm" asChild>
                   <Link href="/login">تسجيل الدخول</Link>
                 </Button>
             </div>

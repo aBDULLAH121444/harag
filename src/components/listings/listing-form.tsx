@@ -18,18 +18,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CAR_MAKES, CAR_MODELS, CAR_YEARS, CAR_FEATURES } from '@/lib/constants';
+import { CAR_MAKES, CAR_MODELS, CAR_YEARS, CAR_FEATURES, CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET } from '@/lib/constants';
 import { generateCarDescription } from '@/lib/actions';
-import { Wand2, Loader2, UploadCloud } from 'lucide-react';
+import { Wand2, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from 'next/navigation';
-import { useUser, useFirestore, useStorage, FirestorePermissionError, errorEmitter } from '@/firebase';
+import { useUser, useFirestore, FirestorePermissionError, errorEmitter } from '@/firebase';
 import Link from 'next/link';
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import Image from 'next/image';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 
 const listingFormSchema = z.object({
@@ -50,13 +49,13 @@ type ListingFormValues = z.infer<typeof listingFormSchema>;
 export default function ListingForm() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [status, setStatus] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const { toast } = useToast();
   const router = useRouter();
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
-  const storage = useStorage();
 
   const form = useForm<ListingFormValues>({
     resolver: zodResolver(listingFormSchema),
@@ -128,26 +127,39 @@ export default function ListingForm() {
       toast({ variant: 'destructive', title: 'خطأ', description: 'يجب عليك تسجيل الدخول لإنشاء إعلان.' });
       return;
     }
-     if (!firestore || !storage) {
+     if (!firestore) {
       toast({ variant: 'destructive', title: 'خطأ', description: 'فشلت تهيئة قاعدة البيانات.' });
       return;
     }
     setIsSubmitting(true);
+    setStatus("");
     
     try {
         let imageUrls: string[] = [];
         if (imageFile) {
-            const imageRef = ref(storage, `ads/${Date.now()}_${imageFile.name}`);
-            const snapshot = await uploadBytes(imageRef, imageFile);
-            imageUrls.push(await getDownloadURL(snapshot.ref));
+            setStatus("جاري الرفع إلى Cloudinary...");
+            const formData = new FormData();
+            formData.append("file", imageFile);
+            formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+
+            const cloudRes = await fetch(
+                `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+                { method: "POST", body: formData }
+            );
+            const cloudData = await cloudRes.json();
+
+            if (!cloudData.secure_url) {
+                throw new Error(cloudData.error?.message || "فشل الرفع إلى Cloudinary. تحقق من إعداداتك.");
+            }
+            imageUrls.push(cloudData.secure_url);
         } else {
-            // Fallback to a placeholder if no image is uploaded
             imageUrls = PlaceHolderImages.filter(img => !img.id.startsWith('avatar-'))
                                           .sort(() => 0.5 - Math.random())
                                           .slice(0, 1)
                                           .map(img => img.imageUrl);
         }
 
+        setStatus("جاري الحفظ في قاعدة البيانات...");
         const carListingsRef = collection(firestore, 'carListings');
         const newListingData = {
             userId: user.uid,
@@ -185,11 +197,13 @@ export default function ListingForm() {
           })
           .finally(() => {
             setIsSubmitting(false);
+            setStatus("");
           });
-    } catch (storageError: any) {
-        console.error("Image upload failed:", storageError);
-        toast({ variant: 'destructive', title: 'خطأ في رفع الصورة', description: storageError.message || 'فشل رفع الصورة. يرجى التأكد من أن حجمها أقل من 5 ميجابايت.' });
+    } catch (uploadError: any) {
+        console.error("Image upload failed:", uploadError);
+        toast({ variant: 'destructive', title: 'خطأ في رفع الصورة', description: uploadError.message || 'فشل رفع الصورة. يرجى المحاولة مرة أخرى.' });
         setIsSubmitting(false);
+        setStatus("");
     }
   }
 
@@ -334,6 +348,7 @@ export default function ListingForm() {
                             <FormControl>
                                 <Input type="file" accept="image/*" onChange={handleImageChange} />
                             </FormControl>
+                            <FormDescription>سيتم رفع الصورة إلى Cloudinary.</FormDescription>
                             <FormMessage />
                         </FormItem>
                     )}
@@ -445,7 +460,7 @@ export default function ListingForm() {
 
         <Button type="submit" size="lg" className="w-full md:w-auto" disabled={isSubmitting}>
            {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-           {isSubmitting ? 'جاري الإرسال...' : 'إنشاء الإعلان'}
+           {isSubmitting ? (status || 'جاري الإرسال...') : 'إنشاء الإعلان'}
         </Button>
       </form>
     </Form>

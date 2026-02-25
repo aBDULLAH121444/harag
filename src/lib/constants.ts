@@ -33,3 +33,6 @@ export const CAR_FEATURES = [
     "دفع رباعي",
     "مثبت سرعة"
 ];
+
+export const CLOUDINARY_CLOUD_NAME = "dbm1benv0";
+export const CLOUDINARY_UPLOAD_PRESET = "ml_default";

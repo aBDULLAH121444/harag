@@ -87,8 +87,8 @@ export default function FilterBar() {
     <Card className="mb-8 shadow-sm">
         <CardContent className="p-4 space-y-4">
             <div>
-                <ScrollArea className="w-full whitespace-nowrap" dir="ltr">
-                    <div className="flex w-max gap-3 pb-4">
+                <ScrollArea className="w-full whitespace-nowrap">
+                    <div className="flex w-max gap-3 pb-4" dir="ltr">
                         <Button 
                             variant={!selectedMake ? 'default' : 'outline'}
                             onClick={() => handleMakeSelection('')}
@@ -101,10 +101,10 @@ export default function FilterBar() {
                                 key={make}
                                 onClick={() => handleMakeSelection(make)}
                                 className={cn(
-                                    "p-2 h-14 w-24 flex items-center justify-center rounded-md border transition-all duration-200 flex-shrink-0 group",
-                                    selectedMake === make 
-                                        ? "ring-2 ring-primary bg-primary/5" 
-                                        : "bg-card hover:bg-muted"
+                                    "p-2 h-14 w-24 flex items-center justify-center rounded-md border-2 transition-colors duration-200 flex-shrink-0 group",
+                                    selectedMake === make
+                                        ? "border-primary bg-primary/5"
+                                        : "border-transparent hover:border-muted-foreground/30"
                                 )}
                                 title={make}
                             >
@@ -119,7 +119,7 @@ export default function FilterBar() {
                 </ScrollArea>
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-end">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
                 <div>
                      <label className="text-sm font-medium text-muted-foreground">الموديل</label>
                     <Select value={selectedModel} onValueChange={setSelectedModel} disabled={!selectedMake}>

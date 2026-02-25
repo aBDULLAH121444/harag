@@ -63,55 +63,55 @@
     {
       "id": "logo-toyota",
       "description": "Toyota Logo",
-      "imageUrl": "https://logos-world.net/wp-content/uploads/2020/04/Toyota-Logo.png",
+      "imageUrl": "https://res.cloudinary.com/dbm1benv0/image/upload/REPLACE_WITH_YOUR_URL.png",
       "imageHint": "toyota logo"
     },
     {
       "id": "logo-hyundai",
       "description": "Hyundai Logo",
-      "imageUrl": "https://res.cloudinary.com/dbm1benv0/image/upload/v1721833509/hyundai-logo_v0wxk1.png",
+      "imageUrl": "https://res.cloudinary.com/dbm1benv0/image/upload/REPLACE_WITH_YOUR_URL.png",
       "imageHint": "hyundai logo"
     },
     {
       "id": "logo-ford",
       "description": "Ford Logo",
-      "imageUrl": "https://res.cloudinary.com/dbm1benv0/image/upload/v1721833509/ford-logo_t93cbx.png",
+      "imageUrl": "https://res.cloudinary.com/dbm1benv0/image/upload/REPLACE_WITH_YOUR_URL.png",
       "imageHint": "ford logo"
     },
     {
       "id": "logo-mercedes-benz",
       "description": "Mercedes-Benz Logo",
-      "imageUrl": "https://logos-world.net/wp-content/uploads/2020/05/Mercedes-Benz-Logo.png",
+      "imageUrl": "https://res.cloudinary.com/dbm1benv0/image/upload/REPLACE_WITH_YOUR_URL.png",
       "imageHint": "mercedes logo"
     },
     {
       "id": "logo-bmw",
       "description": "BMW Logo",
-      "imageUrl": "https://logos-world.net/wp-content/uploads/2020/04/BMW-Logo.png",
+      "imageUrl": "https://res.cloudinary.com/dbm1benv0/image/upload/REPLACE_WITH_YOUR_URL.png",
       "imageHint": "bmw logo"
     },
     {
       "id": "logo-nissan",
       "description": "Nissan Logo",
-      "imageUrl": "https://logos-world.net/wp-content/uploads/2020/04/Nissan-Logo.png",
+      "imageUrl": "https://res.cloudinary.com/dbm1benv0/image/upload/REPLACE_WITH_YOUR_URL.png",
       "imageHint": "nissan logo"
     },
     {
       "id": "logo-kia",
       "description": "Kia Logo",
-      "imageUrl": "https://res.cloudinary.com/dbm1benv0/image/upload/v1721833509/kia-logo_w7veaq.png",
+      "imageUrl": "https://res.cloudinary.com/dbm1benv0/image/upload/REPLACE_WITH_YOUR_URL.png",
       "imageHint": "kia logo"
     },
     {
       "id": "logo-lexus",
       "description": "Lexus Logo",
-      "imageUrl": "https://res.cloudinary.com/dbm1benv0/image/upload/v1721833509/lexus-logo_gmp6pg.png",
+      "imageUrl": "https://res.cloudinary.com/dbm1benv0/image/upload/REPLACE_WITH_YOUR_URL.png",
       "imageHint": "lexus logo"
     },
     {
       "id": "logo-chevrolet",
       "description": "Chevrolet Logo",
-      "imageUrl": "https://logos-world.net/wp-content/uploads/2021/04/Chevrolet-Logo.png",
+      "imageUrl": "https://res.cloudinary.com/dbm1benv0/image/upload/REPLACE_WITH_YOUR_URL.png",
       "imageHint": "chevrolet logo"
     }
   ]

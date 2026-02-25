@@ -63,55 +63,55 @@
     {
       "id": "logo-toyota",
       "description": "Toyota Logo",
-      "imageUrl": "https://res.cloudinary.com/dbm1benv0/image/upload/v1722285000/haraj-yemen-logos/toyota_logo.png",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Toyota_EU.svg/320px-Toyota_EU.svg.png",
       "imageHint": "toyota logo"
     },
     {
       "id": "logo-hyundai",
       "description": "Hyundai Logo",
-      "imageUrl": "https://res.cloudinary.com/dbm1benv0/image/upload/v1722285001/haraj-yemen-logos/hyundai_logo.png",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Hyundai_logo_2.svg/320px-Hyundai_logo_2.svg.png",
       "imageHint": "hyundai logo"
     },
     {
       "id": "logo-ford",
       "description": "Ford Logo",
-      "imageUrl": "https://res.cloudinary.com/dbm1benv0/image/upload/v1722285002/haraj-yemen-logos/ford_logo.png",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Ford_Motor_Company_Logo.svg/320px-Ford_Motor_Company_Logo.svg.png",
       "imageHint": "ford logo"
     },
     {
       "id": "logo-mercedes-benz",
       "description": "Mercedes-Benz Logo",
-      "imageUrl": "https://res.cloudinary.com/dbm1benv0/image/upload/v1722285003/haraj-yemen-logos/mercedes_logo.png",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Mercedes-Benz_Logo_2010.svg/320px-Mercedes-Benz_Logo_2010.svg.png",
       "imageHint": "mercedes logo"
     },
     {
       "id": "logo-bmw",
       "description": "BMW Logo",
-      "imageUrl": "https://res.cloudinary.com/dbm1benv0/image/upload/v1722285004/haraj-yemen-logos/bmw_logo.png",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/BMW.svg/240px-BMW.svg.png",
       "imageHint": "bmw logo"
     },
     {
       "id": "logo-nissan",
       "description": "Nissan Logo",
-      "imageUrl": "https://res.cloudinary.com/dbm1benv0/image/upload/v1722285005/haraj-yemen-logos/nissan_logo.png",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Nissan_logo.svg/320px-Nissan_logo.svg.png",
       "imageHint": "nissan logo"
     },
     {
       "id": "logo-kia",
       "description": "Kia Logo",
-      "imageUrl": "https://res.cloudinary.com/dbm1benv0/image/upload/v1722285006/haraj-yemen-logos/kia_logo.png",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Kia_logo.svg/320px-Kia_logo.svg.png",
       "imageHint": "kia logo"
     },
     {
       "id": "logo-lexus",
       "description": "Lexus Logo",
-      "imageUrl": "https://res.cloudinary.com/dbm1benv0/image/upload/v1722285007/haraj-yemen-logos/lexus_logo.png",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Lexus_logo.svg/320px-Lexus_logo.svg.png",
       "imageHint": "lexus logo"
     },
     {
       "id": "logo-chevrolet",
       "description": "Chevrolet Logo",
-      "imageUrl": "https://res.cloudinary.com/dbm1benv0/image/upload/v1722285008/haraj-yemen-logos/chevrolet_logo.png",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Chevrolet-logoD.svg/320px-Chevrolet-logoD.svg.png",
       "imageHint": "chevrolet logo"
     }
   ]

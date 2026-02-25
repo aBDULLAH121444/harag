@@ -20,14 +20,16 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CAR_MAKES, CAR_MODELS, CAR_YEARS, CAR_FEATURES } from '@/lib/constants';
 import { generateCarDescription } from '@/lib/actions';
-import { Wand2, Loader2 } from 'lucide-react';
+import { Wand2, Loader2, UploadCloud } from 'lucide-react';
 import { useState } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from 'next/navigation';
-import { useUser, useFirestore, FirestorePermissionError, errorEmitter } from '@/firebase';
+import { useUser, useFirestore, useStorage, FirestorePermissionError, errorEmitter } from '@/firebase';
 import Link from 'next/link';
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import Image from 'next/image';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 
 const listingFormSchema = z.object({
@@ -48,10 +50,13 @@ type ListingFormValues = z.infer<typeof listingFormSchema>;
 export default function ListingForm() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const { toast } = useToast();
   const router = useRouter();
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
+  const storage = useStorage();
 
   const form = useForm<ListingFormValues>({
     resolver: zodResolver(listingFormSchema),
@@ -70,6 +75,20 @@ export default function ListingForm() {
   });
 
   const selectedMake = form.watch('make');
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setImageFile(file);
+    if (file) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setImagePreview(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+    } else {
+        setImagePreview(null);
+    }
+  };
 
   const handleGenerateDescription = async () => {
     setIsGenerating(true);
@@ -104,61 +123,74 @@ export default function ListingForm() {
     }
   };
 
-  function onSubmit(data: ListingFormValues) {
+  async function onSubmit(data: ListingFormValues) {
     if (!user) {
       toast({ variant: 'destructive', title: 'خطأ', description: 'يجب عليك تسجيل الدخول لإنشاء إعلان.' });
       return;
     }
-     if (!firestore) {
+     if (!firestore || !storage) {
       toast({ variant: 'destructive', title: 'خطأ', description: 'فشلت تهيئة قاعدة البيانات.' });
       return;
     }
     setIsSubmitting(true);
     
-    const carListingsRef = collection(firestore, 'carListings');
-
-    const carImages = PlaceHolderImages.filter(img => !img.id.startsWith('avatar-'))
+    try {
+        let imageUrls: string[] = [];
+        if (imageFile) {
+            const imageRef = ref(storage, `ads/${Date.now()}_${imageFile.name}`);
+            const snapshot = await uploadBytes(imageRef, imageFile);
+            imageUrls.push(await getDownloadURL(snapshot.ref));
+        } else {
+            // Fallback to a placeholder if no image is uploaded
+            imageUrls = PlaceHolderImages.filter(img => !img.id.startsWith('avatar-'))
                                           .sort(() => 0.5 - Math.random())
-                                          .slice(0, 3)
+                                          .slice(0, 1)
                                           .map(img => img.imageUrl);
+        }
 
-    const newListingData = {
-        userId: user.uid,
-        title: `${data.year} ${data.make} ${data.model}`,
-        make: data.make,
-        model: data.model,
-        year: parseInt(data.year, 10),
-        price: parseInt(data.price, 10),
-        currency: 'ريال سعودي',
-        description: data.description,
-        images: carImages,
-        mileage: parseInt(data.mileage, 10),
-        location: data.location,
-        condition: data.condition,
-        features: data.features,
-        status: 'active',
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-        viewCount: 0,
-    };
+        const carListingsRef = collection(firestore, 'carListings');
+        const newListingData = {
+            userId: user.uid,
+            title: `${data.year} ${data.make} ${data.model}`,
+            make: data.make,
+            model: data.model,
+            year: parseInt(data.year, 10),
+            price: parseInt(data.price, 10),
+            currency: 'ريال سعودي',
+            description: data.description,
+            images: imageUrls,
+            mileage: parseInt(data.mileage, 10),
+            location: data.location,
+            condition: data.condition,
+            features: data.features,
+            status: 'active',
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+            viewCount: 0,
+        };
 
-    addDoc(carListingsRef, newListingData)
-      .then(() => {
-        toast({ title: 'تم إنشاء القائمة', description: 'تم إنشاء قائمتك بنجاح!' });
-        router.push('/dashboard');
-      })
-      .catch((error) => {
-        const permissionError = new FirestorePermissionError({
-            path: carListingsRef.path,
-            operation: 'create',
-            requestResourceData: newListingData,
-        });
-        errorEmitter.emit('permission-error', permissionError);
-        toast({ variant: 'destructive', title: 'خطأ', description: 'حدث خطأ أثناء إنشاء الإعلان. الرجاء معاودة المحاولة.' });
-      })
-      .finally(() => {
+        addDoc(carListingsRef, newListingData)
+          .then(() => {
+            toast({ title: 'تم إنشاء القائمة', description: 'تم إنشاء قائمتك بنجاح!' });
+            router.push('/dashboard');
+          })
+          .catch((error) => {
+            const permissionError = new FirestorePermissionError({
+                path: carListingsRef.path,
+                operation: 'create',
+                requestResourceData: newListingData,
+            });
+            errorEmitter.emit('permission-error', permissionError);
+            toast({ variant: 'destructive', title: 'خطأ', description: 'حدث خطأ أثناء إنشاء الإعلان. الرجاء معاودة المحاولة.' });
+          })
+          .finally(() => {
+            setIsSubmitting(false);
+          });
+    } catch (storageError: any) {
+        console.error("Image upload failed:", storageError);
+        toast({ variant: 'destructive', title: 'خطأ في رفع الصورة', description: storageError.message || 'فشل رفع الصورة. يرجى التأكد من أن حجمها أقل من 5 ميجابايت.' });
         setIsSubmitting(false);
-      });
+    }
   }
 
   if (isUserLoading) {
@@ -288,6 +320,30 @@ export default function ListingForm() {
               )}
             />
           </CardContent>
+        </Card>
+
+        <Card>
+            <CardHeader><CardTitle>صورة الإعلان</CardTitle></CardHeader>
+            <CardContent>
+                <FormField
+                    control={form.control}
+                    name="image"
+                    render={() => (
+                        <FormItem>
+                            <FormLabel>ارفع صورة لسيارتك</FormLabel>
+                            <FormControl>
+                                <Input type="file" accept="image/*" onChange={handleImageChange} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                {imagePreview && (
+                    <div className="mt-4 relative aspect-video w-full max-w-md mx-auto">
+                        <Image src={imagePreview} alt="معاينة الصورة" fill className="rounded-md object-cover" />
+                    </div>
+                )}
+            </CardContent>
         </Card>
 
         <Card>

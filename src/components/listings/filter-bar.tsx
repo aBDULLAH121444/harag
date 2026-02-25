@@ -93,7 +93,7 @@ export default function FilterBar() {
                                 key={make}
                                 onClick={() => handleMakeSelection(make)}
                                 className={cn(
-                                    "p-0.5 h-10 w-16 flex items-center justify-center rounded-lg border-2 transition-all duration-300 flex-shrink-0 group relative overflow-hidden",
+                                    "p-0 h-10 w-16 flex items-center justify-center rounded-lg border-2 transition-all duration-300 flex-shrink-0 group relative overflow-hidden",
                                     selectedMake === make
                                         ? "border-primary bg-white shadow-md scale-105"
                                         : "border-transparent bg-white/50 hover:border-primary/30 hover:bg-white hover:scale-105"
@@ -103,7 +103,7 @@ export default function FilterBar() {
                                 <CarBrandLogo 
                                   brand={make} 
                                   className={cn(
-                                    "h-full w-full transition-transform duration-300 group-hover:scale-110 mix-blend-multiply"
+                                    "h-full w-full transition-transform duration-300 scale-125 group-hover:scale-135 mix-blend-multiply"
                                   )}
                                 />
                                 {selectedMake === make && (

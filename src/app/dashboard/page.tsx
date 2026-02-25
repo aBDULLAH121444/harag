@@ -132,7 +132,7 @@ export default function DashboardPage() {
             <div className="container mx-auto px-4 py-12">
                 <div className="mb-8">
                     <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-primary font-headline">
-                        اعلاناتي
+                        ادارة اعلاناتي
                     </h1>
                 </div>
                 

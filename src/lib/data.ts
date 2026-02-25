@@ -27,6 +27,7 @@ function docToCar(docSnap: any): Car {
         model: data.model,
         year: data.year,
         price: data.price,
+        currency: data.currency || 'ريال سعودي',
         mileage: data.mileage,
         location: data.location,
         description: data.description,
@@ -105,11 +106,11 @@ export async function getUserListings(userId: string): Promise<Car[]> {
     if (!userId) return [];
     
     const carListingsRef = collection(db, 'carListings');
-    const q = query(carListingsRef, where('userId', '==', userId));
+    const q = query(carListingsRef, where('userId', '==', userId), where('status', '==', 'active'));
 
     try {
         const snapshot = await getDocs(q);
-        const listings = snapshot.docs.map(docToCar).filter(car => car.status === 'active');
+        const listings = snapshot.docs.map(docToCar);
         // Sort listings by date descending (newest first)
         listings.sort((a, b) => b.postedAt.getTime() - a.postedAt.getTime());
         return listings;
@@ -132,3 +133,5 @@ export async function getUserProfile(userId: string) {
     }
     return null;
 }
+
+    

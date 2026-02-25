@@ -7,6 +7,7 @@ export type Car = {
   model: string;
   year: number;
   price: number;
+  currency: string;
   mileage: number;
   location: string;
   description: string;
@@ -22,3 +23,5 @@ export type Car = {
   condition: 'جديد' | 'شبه جديد' | 'جيد' | 'مقبول';
   status: string;
 };
+
+    

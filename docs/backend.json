@@ -88,7 +88,12 @@
         },
         "currency": {
           "type": "string",
-          "description": "The currency in which the price is listed (e.g., 'YER' for Yemeni Rial, 'USD')."
+          "description": "The currency in which the price is listed (e.g., 'ريال يمني', 'ريال سعودي', 'دولار أمريكي').",
+          "enum": [
+            "ريال سعودي",
+            "ريال يمني",
+            "دولار أمريكي"
+          ]
         },
         "description": {
           "type": "string",
@@ -353,3 +358,5 @@
     "reasoning": "The Firestore structure for Haraj Al-Yemen is designed to be secure, scalable, and debuggable by strictly adhering to the core design principles and mandates. \n\n**1. Authorization Independence (CRITICAL):**\n\n*   **User Profiles (`/users/{userId}`):** Authorization is achieved through path-based ownership. The `userId` in the path directly corresponds to `request.auth.uid`, ensuring that no `get()` operations are needed in security rules to determine ownership. Each user's profile document (`UserProfile`) is stored as `/users/{userId}`, where the document ID is the Firebase Authentication UID.\n*   **Public Car Listings (`/carListings/{listingId}`):** Each `CarListing` document explicitly includes the `userId` of the owner. This denormalization allows security rules to check `resource.data.userId == request.auth.uid` for write operations without requiring a `get()` call to any other document. This maintains atomicity and simplifies rules.\n*   **User Car Listing Drafts (`/users/{userId}/carListingDrafts/{draftId}`):** Similar to User Profiles, authorization is path-based. The `{userId}` in the path ensures that only the authenticated user matching that UID can access their own drafts, eliminating the need for `get()` calls.\n*   **Saved Searches (`/users/{userId}/savedSearches/{searchId}`):** Follows the same path-based authorization as drafts, with `{userId}` explicitly defining ownership.\n*   **Messages (`/messages/{messageId}`):** Each `Message` document explicitly contains both `senderId` and `receiverId`. Security rules can directly evaluate `request.auth.uid == resource.data.senderId || request.auth.uid == resource.data.receiverId` for read/write access. This denormalization avoids any `get()` operations for authorization.\n\n**2. Structural Segregation (Homogeneous Security Posture):**\n\n*   **Public vs. Private Listings:** Active, publicly visible car listings are stored in `/carListings/{listingId}`. These documents are designed for broad read access and owner-only write access. In contrast, private `draft` listings are segregated into `/users/{userId}/carListingDrafts/{draftId}`, where they are strictly accessible only by the owning user. This separation simplifies rules; `/carListings` rules only need to check `status: 'active'` for public reads, while `/users/{userId}/carListingDrafts` rules only need to check path-based ownership.\n*   **User-Specific Data:** All user-specific, private data like `UserProfile`, `CarListingDrafts`, and `SavedSearch` entities are nested under `/users/{userId}/`, reinforcing path-based ownership and distinct security postures from public data.\n\n**3. QAPs (Secure List Operations):**\n\n*   **Public Car Listings:** The `/carListings` collection supports secure `list` operations for any user (authenticated or unauthenticated). Rules can efficiently ensure that only `active` listings are returned, as all documents in this collection share the same security posture (publicly readable if active).\n*   **User-Owned Data:** For `/users/{userId}/carListingDrafts` and `/users/{userId}/savedSearches`, `list` operations are implicitly secure. A user can only query their own subcollections by providing their `request.auth.uid` as `{userId}` in the path. This allows the client to retrieve all drafts or saved searches for the current user in a single, secure query.\n*   **Messages:** While not a single "
   }
 }
+
+    

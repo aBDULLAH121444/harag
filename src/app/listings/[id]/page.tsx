@@ -70,7 +70,7 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
                     <h1 className="text-3xl font-bold font-headline text-primary">{car.year} {car.make} {car.model}</h1>
                     <div className="flex items-center gap-2 text-2xl font-semibold text-accent pt-2">
                         <Tag className="w-6 h-6 ml-2" />
-                        <span>{car.price.toLocaleString()} ريال سعودي</span>
+                        <span>{car.price.toLocaleString()} {car.currency}</span>
                     </div>
                 </CardHeader>
                 <CardContent className="space-y-4 text-sm">
@@ -93,22 +93,6 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
                         <span className="text-muted-foreground flex items-center gap-2"><Wrench className="w-4 h-4 ml-2"/> الحالة</span>
                         <Badge variant="secondary">{car.condition}</Badge>
                     </div>
-                </CardContent>
-            </Card>
-
-            <Card>
-                <CardHeader>
-                    <CardTitle>الميزات</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <ul className="grid grid-cols-2 gap-2 text-sm">
-                        {car.features.map(feature => (
-                            <li key={feature} className="flex items-center gap-2">
-                                <CheckCircle className="w-4 h-4 text-green-500 ml-2" />
-                                <span className="text-muted-foreground">{feature}</span>
-                            </li>
-                        ))}
-                    </ul>
                 </CardContent>
             </Card>
 
@@ -148,3 +132,5 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
     </div>
   );
 }
+
+    

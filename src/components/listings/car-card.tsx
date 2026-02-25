@@ -41,7 +41,7 @@ export default function CarCard({ car }: CarCardProps) {
           <div className="mt-2 text-sm text-muted-foreground space-y-2">
             <div className="flex items-center gap-2">
               <Tag className="w-4 h-4 text-accent" />
-              <span className="font-semibold text-base text-primary">{car.price.toLocaleString()} ريال سعودي</span>
+              <span className="font-semibold text-base text-primary">{car.price.toLocaleString()} {car.currency}</span>
             </div>
             <div className="flex items-center gap-2">
               <Gauge className="w-4 h-4" />
@@ -63,3 +63,5 @@ export default function CarCard({ car }: CarCardProps) {
     </Link>
   );
 }
+
+    

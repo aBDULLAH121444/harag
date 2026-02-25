@@ -36,6 +36,7 @@ const listingFormSchema = z.object({
   model: z.string().min(1, 'الموديل مطلوب'),
   year: z.string().min(1, 'السنة مطلوبة'),
   price: z.string().min(1, 'السعر مطلوب').regex(/^\d+$/, "يجب أن يكون السعر رقمًا"),
+  currency: z.string().min(1, 'العملة مطلوبة'),
   mileage: z.string().min(1, 'المسافة المقطوعة مطلوبة').regex(/^\d+$/, "يجب أن تكون المسافة المقطوعة رقمًا"),
   location: z.string().min(1, 'الموقع مطلوب'),
   condition: z.string().min(1, 'الحالة مطلوبة'),
@@ -64,6 +65,7 @@ export default function ListingForm() {
       model: '',
       year: '',
       price: '',
+      currency: 'ريال سعودي',
       mileage: '',
       location: '',
       condition: '',
@@ -189,7 +191,7 @@ export default function ListingForm() {
             model: data.model,
             year: parseInt(data.year, 10),
             price: parseInt(data.price, 10),
-            currency: 'ريال سعودي',
+            currency: data.currency,
             description: data.description || '',
             images: imageUrls,
             mileage: parseInt(data.mileage, 10),
@@ -306,19 +308,6 @@ export default function ListingForm() {
             />
             <FormField
               control={form.control}
-              name="price"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>السعر (ريال سعودي)</FormLabel>
-                  <FormControl>
-                    <Input type="number" placeholder="مثال: 95000" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
               name="mileage"
               render={({ field }) => (
                 <FormItem>
@@ -330,11 +319,44 @@ export default function ListingForm() {
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="price"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>السعر</FormLabel>
+                  <FormControl>
+                    <Input type="number" placeholder="مثال: 95000" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="currency"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>العملة</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger><SelectValue placeholder="اختر العملة" /></SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                        <SelectItem value="ريال سعودي">ريال سعودي</SelectItem>
+                        <SelectItem value="ريال يمني">ريال يمني</SelectItem>
+                        <SelectItem value="دولار أمريكي">دولار أمريكي</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
              <FormField
               control={form.control}
               name="location"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="md:col-span-2">
                   <FormLabel>الموقع</FormLabel>
                    <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
@@ -483,3 +505,5 @@ export default function ListingForm() {
     </Form>
   );
 }
+
+    

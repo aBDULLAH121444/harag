@@ -5,11 +5,11 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { Separator } from '@/components/ui/separator';
 import { format, formatDistanceToNow } from 'date-fns';
 import { arSA } from 'date-fns/locale';
 import { Tag, Gauge, MapPin, Calendar, Wrench, CheckCircle, Phone } from 'lucide-react';
+import ListingGallery from '@/components/listings/listing-gallery';
 
 const WhatsAppIcon = ({ className }: { className?: string }) => (
     <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className={className}>
@@ -34,26 +34,7 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
-            <Carousel className="w-full rounded-lg overflow-hidden shadow-lg" dir="ltr">
-                <CarouselContent>
-                    {car.images.map((img, index) => (
-                    <CarouselItem key={index}>
-                        <div className="aspect-video relative">
-                            <Image
-                                src={img.imageUrl}
-                                alt={`${car.make} ${car.model} image ${index + 1}`}
-                                fill
-                                className="object-cover"
-                                data-ai-hint={img.imageHint}
-                                priority={index === 0}
-                            />
-                        </div>
-                    </CarouselItem>
-                    ))}
-                </CarouselContent>
-                <CarouselPrevious className="left-4" />
-                <CarouselNext className="right-4" />
-            </Carousel>
+            <ListingGallery images={car.images} carName={`${car.make} ${car.model}`} />
 
             <Card className="mt-8">
                 <CardHeader>

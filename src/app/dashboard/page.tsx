@@ -144,9 +144,6 @@ export default function DashboardPage() {
                         {userListings.length === 0 ? (
                             <div className="text-center py-10">
                                 <p className="text-muted-foreground">لم تقم بإضافة أي قوائم حتى الآن.</p>
-                                 <Button asChild className="mt-4">
-                                    <Link href="/sell">إنشاء قائمة جديدة</Link>
-                                </Button>
                             </div>
                         ) : (
                         <Table>

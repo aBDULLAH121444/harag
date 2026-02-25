@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import { cn } from "@/lib/utils";
+import Image from 'next/image';
 
 type LogoProps = {
   className?: string;
@@ -27,14 +28,16 @@ const HyundaiLogo = ({ className }: LogoProps) => (
   </svg>
 );
 
-// Specific colors
+// Use a real image for Ford logo
 const FordLogo = ({ className }: LogoProps) => (
-  <svg viewBox="-5 -5 210 85" xmlns="http://www.w3.org/2000/svg" className={className}>
-    <title>Ford</title>
-    <ellipse cx="100" cy="37.5" rx="100" ry="37.5" fill="#003478"/>
-    <ellipse cx="100" cy="37.5" rx="98" ry="35.5" stroke="white" strokeWidth="4" fill="none" />
-    <text x="50%" y="55%" dominantBaseline="middle" textAnchor="middle" fill="white" fontSize="40" fontFamily="cursive" >Ford</text>
-  </svg>
+  <Image
+    src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Ford_logo_flat.svg/1200px-Ford_logo_flat.svg.png"
+    alt="Ford Logo"
+    width={1200}
+    height={450}
+    className={className}
+    priority
+  />
 );
 
 // Uses currentColor

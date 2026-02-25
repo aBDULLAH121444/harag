@@ -33,10 +33,8 @@ function docToCar(docSnap: any): Car {
         features: data.features || [],
         images: images,
         seller: {
-            name: data.sellerName || 'مستخدم غير معروف',
-            // The UI expects an avatarId for the placeholder lookup.
-            // This is a simplification. In a real app, this would be a URL from the user profile.
-            avatarId: 'avatar-1' 
+            name: 'مستخدم غير معروف',
+            avatarUrl: undefined,
         },
         postedAt: (data.createdAt as Timestamp)?.toDate() || new Date(),
         condition: data.condition,
@@ -99,9 +97,8 @@ export async function getListingById(id: string): Promise<Car | undefined> {
         const userProfileSnap = await getDoc(doc(db, 'users', car.userId));
         if (userProfileSnap.exists()) {
             const userData = userProfileSnap.data();
-            car.seller.name = `${userData.firstName} ${userData.lastName}`.trim() || userData.username;
-            // Here you could map a real avatar URL if the UserProfile and Car types were updated.
-            // Sticking to avatarId for now to avoid breaking UI components.
+            car.seller.name = `${userData.firstName} ${userData.lastName}`.trim() || userData.username || 'مستخدم غير معروف';
+            car.seller.avatarUrl = userData.photoURL;
         }
     } catch (e) {
         console.error(`Failed to fetch user profile for ${car.userId}:`, e);
@@ -118,7 +115,7 @@ export async function getUserListings(userId: string): Promise<Car[]> {
     if (!userId) return [];
     
     const carListingsRef = collection(db, 'carListings');
-    const q = query(carListingsRef, where('userId', '==', userId));
+    const q = query(carListingsRef, where('userId', '==', userId), where('status', '==', 'active'));
 
     try {
         const snapshot = await getDocs(q);
@@ -132,6 +129,16 @@ export async function getUserListings(userId: string): Promise<Car[]> {
     }
 }
 
-export function getImageById(id: string) {
-    return PlaceHolderImages.find(img => img.id === id);
+export async function getUserProfile(userId: string) {
+    const { firestore: db } = getFirebaseServerServices();
+    if (!userId) return null;
+    try {
+        const userProfileSnap = await getDoc(doc(db, 'users', userId));
+        if (userProfileSnap.exists()) {
+            return userProfileSnap.data();
+        }
+    } catch (e) {
+        console.error(`Failed to fetch user profile for ${userId}:`, e);
+    }
+    return null;
 }

@@ -14,7 +14,7 @@ export type Car = {
   images: ImagePlaceholder[];
   seller: {
     name: string;
-    avatarId: string;
+    avatarUrl?: string;
   };
   postedAt: Date;
   condition: 'جديد' | 'شبه جديد' | 'جيد' | 'مقبول';

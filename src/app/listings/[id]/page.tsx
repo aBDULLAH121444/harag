@@ -1,6 +1,7 @@
-import { getListingById, getImageById } from '@/lib/data';
+import { getListingById } from '@/lib/data';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -17,8 +18,6 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
   if (!car) {
     notFound();
   }
-  
-  const sellerAvatar = getImageById(car.seller.avatarId);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -108,15 +107,21 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
                 <CardHeader>
                     <CardTitle>معلومات البائع</CardTitle>
                 </CardHeader>
-                <CardContent className="flex items-center gap-4">
-                    <Avatar className="h-16 w-16">
-                        {sellerAvatar && <AvatarImage src={sellerAvatar.imageUrl} alt={car.seller.name} data-ai-hint={sellerAvatar.imageHint} />}
-                        <AvatarFallback>{car.seller.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                        <p className="font-bold text-lg">{car.seller.name}</p>
-                        <p className="text-sm text-muted-foreground">عضو منذ {format(new Date(2021, 5, 1), 'MMMM yyyy', { locale: arSA })}</p>
-                    </div>
+                <CardContent>
+                    <Link href={`/seller/${car.userId}`} className="flex items-center gap-4 group rounded-lg p-2 -m-2 transition-colors hover:bg-accent/50">
+                        <Avatar className="h-16 w-16">
+                            {car.seller.avatarUrl ? (
+                                <AvatarImage src={car.seller.avatarUrl} alt={car.seller.name} />
+                            ) : (
+                                <AvatarImage src="https://images.unsplash.com/photo-1624395213043-fa2e123b2656?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxtYW4lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NzE5Mzk5MDZ8MA&ixlib=rb-4.1.0&q=80&w=1080" alt={car.seller.name} data-ai-hint="man portrait" />
+                            )}
+                            <AvatarFallback>{car.seller.name.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                            <p className="font-bold text-lg group-hover:text-primary">{car.seller.name}</p>
+                            <p className="text-sm text-muted-foreground">عضو منذ {format(new Date(2021, 5, 1), 'MMMM yyyy', { locale: arSA })}</p>
+                        </div>
+                    </Link>
                 </CardContent>
             </Card>
             <Button size="lg" className="w-full">

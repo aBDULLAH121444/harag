@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, type TouchEvent } from 'react';
 import Image from 'next/image';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import type { ImagePlaceholder } from '@/lib/placeholder-images';
@@ -14,10 +14,39 @@ type ListingGalleryProps = {
 export default function ListingGallery({ images, carName }: ListingGalleryProps) {
   const [selectedImage, setSelectedImage] = useState<ImagePlaceholder | null>(null);
   const [zoom, setZoom] = useState(1);
-  
+  const initialDistance = useRef<number | null>(null);
+  const initialZoom = useRef<number>(1);
+
   const handleClose = () => {
     setSelectedImage(null);
     setZoom(1);
+    initialDistance.current = null;
+    initialZoom.current = 1;
+  };
+
+  const getDistance = (touches: TouchList) => {
+    return Math.hypot(touches[0].pageX - touches[1].pageX, touches[0].pageY - touches[1].pageY);
+  };
+
+  const handleTouchStart = (e: TouchEvent<HTMLDivElement>) => {
+    if (e.touches.length === 2) {
+      e.preventDefault();
+      initialDistance.current = getDistance(e.touches);
+      initialZoom.current = zoom;
+    }
+  };
+
+  const handleTouchMove = (e: TouchEvent<HTMLDivElement>) => {
+    if (e.touches.length === 2 && initialDistance.current !== null) {
+      e.preventDefault();
+      const newDistance = getDistance(e.touches);
+      const newZoom = initialZoom.current * (newDistance / initialDistance.current);
+      setZoom(Math.max(0.5, Math.min(newZoom, 3)));
+    }
+  };
+
+  const handleTouchEnd = () => {
+    initialDistance.current = null;
   };
 
   return (
@@ -51,6 +80,9 @@ export default function ListingGallery({ images, carName }: ListingGalleryProps)
           <div
             className="relative w-full h-full p-4 flex items-center justify-center"
             onClick={(e) => e.stopPropagation()}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
           >
             {/* Controls */}
             <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
@@ -69,7 +101,7 @@ export default function ListingGallery({ images, carName }: ListingGalleryProps)
             </div>
             
             {/* Image Container for zooming */}
-            <div className="w-full h-full overflow-auto">
+            <div className="w-full h-full overflow-auto" style={{ touchAction: 'none' }}>
                 <div 
                     className="relative w-full h-full flex items-center justify-center transition-transform duration-200 ease-out"
                     style={{ transform: `scale(${zoom})` }}

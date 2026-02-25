@@ -16,6 +16,7 @@ export type Car = {
     name: string;
     avatarUrl?: string;
     phoneNumber?: string;
+    joinedAt: Date;
   };
   postedAt: Date;
   condition: 'جديد' | 'شبه جديد' | 'جيد' | 'مقبول';

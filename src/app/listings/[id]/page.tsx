@@ -10,7 +10,14 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { Separator } from '@/components/ui/separator';
 import { format, formatDistanceToNow } from 'date-fns';
 import { arSA } from 'date-fns/locale';
-import { Tag, Gauge, MapPin, Calendar, Wrench, CheckCircle, MessageSquare, Phone } from 'lucide-react';
+import { Tag, Gauge, MapPin, Calendar, Wrench, CheckCircle, Phone } from 'lucide-react';
+
+const WhatsAppIcon = ({ className }: { className?: string }) => (
+    <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className={className}>
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.297-.497.099-.198.05-.371-.025-.52s-.67-.166-.916-.234c-.246-.067-.52.005-.765.116-.245.111-.967.462-1.206.887-.238.424-.52.887-.52 1.547 0 .659.297 1.253.372 1.352.075.098.52 1.096 2.474 2.825.467.422.834.636 1.12.723.286.087.56.075.765-.025.224-.111.967-.448 1.164-.94.197-.492.197-.918.148-1.017-.049-.098-.197-.148-.446-.273zM12.072 2.01C6.58 2.01 2.125 6.464 2.125 11.95c0 1.798.465 3.493 1.28 4.96l-1.35 4.938 5.06-1.332c1.41.772 3.003 1.21 4.686 1.21h.004c5.49 0 9.945-4.455 9.945-9.942 0-5.487-4.455-9.943-9.945-9.943zM12.072 21.455h-.004c-1.842 0-3.593-.506-5.097-1.4l-.367-.217-3.784.99 1.008-3.69-.24-.39c-.933-1.543-1.448-3.37-1.448-5.263 0-4.628 3.76-8.39 8.388-8.39 4.628 0 8.388 3.762 8.388 8.39 0 4.628-3.76 8.39-8.388 8.39z" fill="currentColor"/>
+    </svg>
+);
+
 
 export default async function ListingDetailPage({ params }: { params: { id: string } }) {
   const car = await getListingById(params.id);
@@ -18,6 +25,9 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
   if (!car) {
     notFound();
   }
+  
+  const whatsappNumber = car.seller.phoneNumber?.replace('+', '');
+  const whatsappUrl = whatsappNumber ? `https://wa.me/${whatsappNumber}` : '';
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -119,24 +129,28 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
                         </Avatar>
                         <div>
                             <p className="font-bold text-lg group-hover:text-primary">{car.seller.name}</p>
-                            <p className="text-sm text-muted-foreground">عضو منذ {format(new Date(2021, 5, 1), 'MMMM yyyy', { locale: arSA })}</p>
+                            <p className="text-sm text-muted-foreground">عضو منذ {format(car.seller.joinedAt, 'MMMM yyyy', { locale: arSA })}</p>
                         </div>
                     </Link>
-                    {car.seller.phoneNumber && (
-                        <div className="mt-4">
-                            <a href={`tel:${car.seller.phoneNumber}`} className="w-full">
-                                <Button variant="outline" className="w-full">
-                                    <Phone className="ml-2 h-4 w-4" />
-                                    {car.seller.phoneNumber}
-                                </Button>
-                            </a>
-                        </div>
-                    )}
                 </CardContent>
             </Card>
-            <Button size="lg" className="w-full">
-                <MessageSquare className="ml-2 h-5 w-5"/> تواصل مع البائع
-            </Button>
+            
+            {car.seller.phoneNumber && (
+                <div className="space-y-3">
+                     <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="w-full">
+                        <Button size="lg" className="w-full bg-[#25D366] hover:bg-[#25D366]/90 text-white">
+                            <WhatsAppIcon className="ml-2 h-5 w-5" />
+                            تواصل عبر واتساب
+                        </Button>
+                    </a>
+                    <a href={`tel:${car.seller.phoneNumber}`} className="w-full">
+                        <Button size="lg" variant="outline" className="w-full">
+                            <Phone className="ml-2 h-4 w-4" />
+                            اتصال: {car.seller.phoneNumber}
+                        </Button>
+                    </a>
+                </div>
+            )}
         </div>
 
       </div>

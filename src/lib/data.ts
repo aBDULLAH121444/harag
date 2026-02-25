@@ -97,7 +97,7 @@ export async function getListingById(id: string): Promise<Car | undefined> {
         const userProfileSnap = await getDoc(doc(db, 'users', car.userId));
         if (userProfileSnap.exists()) {
             const userData = userProfileSnap.data();
-            car.seller.name = `${userData.firstName} ${userData.lastName}`.trim() || userData.username || 'مستخدم غير معروف';
+            car.seller.name = userData.name || 'مستخدم غير معروف';
             car.seller.avatarUrl = userData.photoURL;
         }
     } catch (e) {
@@ -142,3 +142,5 @@ export async function getUserProfile(userId: string) {
     }
     return null;
 }
+
+    

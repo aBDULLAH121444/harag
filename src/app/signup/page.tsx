@@ -1,153 +1,142 @@
 'use client';
-import Link from "next/link"
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input"
-import { Car, Loader2 } from "lucide-react"
+import { Input } from "@/components/ui/input";
+import { Car, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth, useFirestore } from "@/firebase";
-import { createUserWithEmailAndPassword, updateProfile, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { RecaptchaVerifier, signInWithPhoneNumber, updateProfile, type ConfirmationResult } from "firebase/auth";
 import { doc, setDoc, serverTimestamp, getDoc } from "firebase/firestore";
 import { FirebaseError } from "firebase/app";
-import { Separator } from "@/components/ui/separator";
 
 const signupSchema = z.object({
-  firstName: z.string().min(1, "الاسم الأول مطلوب"),
-  lastName: z.string().min(1, "الاسم الأخير مطلوب"),
+  name: z.string().min(2, "الاسم مطلوب"),
   email: z.string().email("البريد الإلكتروني غير صالح"),
-  password: z.string().min(6, "يجب أن لا تقل كلمة المرور عن 6 أحرف"),
+  phoneNumber: z.string().regex(/^7[01378]\d{7}$/, "يرجى إدخال رقم هاتف يمني صالح يبدأ بـ 7 (9 أرقام)"),
 });
 
-const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24px" height="24px" {...props}>
-      <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12s5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24s8.955,20,20,20s20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z" />
-      <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z" />
-      <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.222,0-9.658-3.301-11.28-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z" />
-      <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.574l6.19,5.238C39.902,35.688,44,30.138,44,24C44,22.659,43.862,21.35,43.611,20.083z" />
-    </svg>
-);
-
+const otpSchema = z.object({
+  otp: z.string().min(6, "يجب أن يكون الرمز مكونًا من 6 أرقام"),
+});
 
 export default function SignupPage() {
     const router = useRouter();
     const auth = useAuth();
     const firestore = useFirestore();
     const { toast } = useToast();
+    
+    const [step, setStep] = useState<'details' | 'otp'>('details');
+    const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [formValues, setFormValues] = useState<z.infer<typeof signupSchema> | null>(null);
     
-    const form = useForm<z.infer<typeof signupSchema>>({
+    const detailsForm = useForm<z.infer<typeof signupSchema>>({
         resolver: zodResolver(signupSchema),
-        defaultValues: { firstName: "", lastName: "", email: "", password: "" },
+        defaultValues: { name: "", email: "", phoneNumber: "" },
     });
-    
 
-    async function onSubmit(values: z.infer<typeof signupSchema>) {
-        if (!auth || !firestore) {
+    const otpForm = useForm<z.infer<typeof otpSchema>>({
+        resolver: zodResolver(otpSchema),
+        defaultValues: { otp: "" },
+    });
+
+    useEffect(() => {
+        if (!auth || (window as any).recaptchaVerifier) return;
+        (window as any).recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+          'size': 'invisible',
+          'callback': () => {},
+        });
+        return () => {
+            if ((window as any).recaptchaVerifier) {
+                (window as any).recaptchaVerifier.clear();
+            }
+        };
+      }, [auth]);
+
+    async function onDetailsSubmit(values: z.infer<typeof signupSchema>) {
+        if (!auth) {
             toast({ variant: "destructive", title: "خطأ في التهيئة" });
             return;
         };
         setIsSubmitting(true);
+        setFormValues(values);
 
         try {
-            const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
-            const user = userCredential.user;
+            const formattedPhoneNumber = `+967${values.phoneNumber}`;
+            const appVerifier = (window as any).recaptchaVerifier;
+            const confirmation = await signInWithPhoneNumber(auth, formattedPhoneNumber, appVerifier);
             
-            const fullName = `${values.firstName} ${values.lastName}`;
-            await updateProfile(user, {
-                displayName: fullName,
-            });
-
-            const userDocRef = doc(firestore, "users", user.uid);
-            const userProfile = {
-                id: user.uid,
-                email: user.email,
-                firstName: values.firstName,
-                lastName: values.lastName,
-                username: user.email?.split('@')[0],
-                createdAt: serverTimestamp(),
-                updatedAt: serverTimestamp(),
-            };
-            await setDoc(userDocRef, userProfile);
-
-            toast({ title: "تم إنشاء الحساب بنجاح!" });
-            router.push('/dashboard');
-
+            setConfirmationResult(confirmation);
+            setStep('otp');
+            toast({ title: "تم إرسال الرمز", description: `تم إرسال رمز التحقق إلى ${formattedPhoneNumber}` });
         } catch (error) {
-            console.error("Signup Error:", error);
+            console.error("Phone Sign-In Error:", error);
             let description = "حدث خطأ غير متوقع.";
             if (error instanceof FirebaseError) {
-                if (error.code === 'auth/email-already-in-use') {
-                    description = "هذا البريد الإلكتروني مستخدم بالفعل.";
-                } else {
-                    description = "حدث خطأ أثناء إنشاء حسابك. يرجى المحاولة مرة أخرى.";
+                if (error.code === 'auth/invalid-phone-number') {
+                    description = "رقم الهاتف الذي أدخلته غير صالح.";
+                } else if (error.code === 'auth/too-many-requests') {
+                    description = "تم إرسال عدد كبير جدًا من الطلبات. يرجى المحاولة مرة أخرى لاحقًا.";
                 }
             }
-            toast({
-                variant: "destructive",
-                title: "فشل إنشاء الحساب",
-                description,
-            });
+            toast({ variant: "destructive", title: "فشل إرسال الرمز", description });
         } finally {
             setIsSubmitting(false);
         }
     }
 
-    async function handleGoogleSignIn() {
-        if (!auth || !firestore) {
-            toast({ variant: "destructive", title: "خطأ في التهيئة", description: "لم يتم تهيئة خدمات Firebase بشكل صحيح." });
+    async function onOtpSubmit(values: z.infer<typeof otpSchema>) {
+        if (!confirmationResult || !formValues || !firestore) {
+            toast({ variant: "destructive", title: "خطأ", description: "بيانات النموذج أو التحقق غير موجودة." });
             return;
         }
-
-        const provider = new GoogleAuthProvider();
+        setIsSubmitting(true);
         try {
-            const result = await signInWithPopup(auth, provider);
-            const user = result.user;
+            const userCredential = await confirmationResult.confirm(values.otp);
+            const user = userCredential.user;
             
             const userDocRef = doc(firestore, "users", user.uid);
             const userDoc = await getDoc(userDocRef);
 
             if (!userDoc.exists()) {
-                const [firstName, ...lastName] = (user.displayName || " ").split(" ");
+                await updateProfile(user, { displayName: formValues.name });
+                
                 const userProfile = {
                     id: user.uid,
-                    email: user.email,
-                    firstName: firstName || "",
-                    lastName: lastName.join(" ") || "",
-                    username: user.email?.split('@')[0],
-                    photoURL: user.photoURL,
+                    name: formValues.name,
+                    email: formValues.email,
+                    phoneNumber: formValues.phoneNumber,
                     createdAt: serverTimestamp(),
                     updatedAt: serverTimestamp(),
                 };
-                
                 await setDoc(userDocRef, userProfile);
             }
-            
-            toast({ title: "تم تسجيل الدخول بنجاح!" });
+
+            toast({ title: "تم إنشاء الحساب بنجاح!" });
             router.push('/dashboard');
 
         } catch (error) {
-            console.error("Google Sign-In Error:", error);
-            let description = "حدث خطأ أثناء تسجيل الدخول باستخدام جوجل.";
+            console.error("OTP Confirmation Error:", error);
+            let description = "حدث خطأ غير متوقع.";
             if (error instanceof FirebaseError) {
-                 if (error.code === 'auth/popup-closed-by-user') {
-                    description = "تم إغلاق نافذة تسجيل الدخول. يرجى المحاولة مرة أخرى.";
+                if (error.code === 'auth/invalid-verification-code') {
+                    description = "رمز التحقق الذي أدخلته غير صحيح.";
                 } else if (error.code === 'auth/account-exists-with-different-credential') {
-                    description = "يوجد حساب بالفعل بهذا البريد الإلكتروني ولكن ببيانات اعتماد مختلفة.";
-                } else if (error.code === 'auth/operation-not-allowed') {
-                    description = "تسجيل الدخول عبر جوجل غير مفعّل. يرجى تفعيله في لوحة تحكم Firebase.";
+                    description = "يوجد حساب بالفعل بهذا الرقم.";
                 }
             }
-            toast({ variant: "destructive", title: "فشل إنشاء الحساب", description, });
+            toast({ variant: "destructive", title: "فشل إنشاء الحساب", description });
+        } finally {
+            setIsSubmitting(false);
         }
     }
-
 
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-14rem)] py-12 px-4">
@@ -158,42 +147,28 @@ export default function SignupPage() {
             </Link>
             <CardTitle className="text-2xl font-headline">إنشاء حساب</CardTitle>
             <CardDescription>
-                أدخل معلوماتك لإنشاء حساب
+            {step === 'details' ? 'أدخل معلوماتك لإنشاء حساب' : 'أدخل الرمز الذي تم إرساله إلى هاتفك'}
             </CardDescription>
         </CardHeader>
         <CardContent>
-            <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                        <FormField
-                            control={form.control}
-                            name="firstName"
-                            render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>الاسم الأول</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="أحمد" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="lastName"
-                            render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>الاسم الأخير</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="علي" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                            )}
-                        />
-                    </div>
+            {step === 'details' ? (
+            <Form {...detailsForm}>
+                <form onSubmit={detailsForm.handleSubmit(onDetailsSubmit)} className="space-y-4">
                      <FormField
-                        control={form.control}
+                        control={detailsForm.control}
+                        name="name"
+                        render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>الاسم الكامل</FormLabel>
+                            <FormControl>
+                                <Input placeholder="أحمد علي" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                        )}
+                    />
+                     <FormField
+                        control={detailsForm.control}
                         name="email"
                         render={({ field }) => (
                         <FormItem>
@@ -205,17 +180,20 @@ export default function SignupPage() {
                         </FormItem>
                         )}
                     />
-                     <FormField
-                        control={form.control}
-                        name="password"
+                    <FormField
+                        control={detailsForm.control}
+                        name="phoneNumber"
                         render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>كلمة المرور</FormLabel>
+                            <FormItem>
+                            <FormLabel>رقم الهاتف</FormLabel>
                             <FormControl>
-                                <Input type="password" {...field} />
+                                <div className="flex items-center">
+                                    <span className="border border-l-0 rounded-r-md px-3 py-2 bg-muted text-muted-foreground">+967</span>
+                                    <Input placeholder="771234567" {...field} className="rounded-l-md rounded-r-none text-left" dir="ltr" />
+                                </div>
                             </FormControl>
                             <FormMessage />
-                        </FormItem>
+                            </FormItem>
                         )}
                     />
                     <Button type="submit" className="w-full" disabled={isSubmitting}>
@@ -224,17 +202,31 @@ export default function SignupPage() {
                     </Button>
                 </form>
             </Form>
+            ) : (
+            <Form {...otpForm}>
+              <form onSubmit={otpForm.handleSubmit(onOtpSubmit)} className="space-y-4">
+                <FormField
+                  control={otpForm.control}
+                  name="otp"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>رمز التحقق</FormLabel>
+                      <FormControl>
+                        <Input placeholder="123456" {...field} type="number" className="text-center" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                  {isSubmitting && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
+                  تحقق وإنشاء الحساب
+                </Button>
+              </form>
+            </Form>
+            )}
             
-            <div className="relative my-4">
-                <Separator />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 px-2 bg-card text-sm text-muted-foreground">أو</div>
-            </div>
-
-            <Button variant="outline" className="w-full" onClick={handleGoogleSignIn}>
-                <GoogleIcon className="mr-2 h-5 w-5"/>
-                إنشاء حساب باستخدام جوجل
-            </Button>
-
+            <div id="recaptcha-container"></div>
 
             <div className="mt-4 text-center text-sm">
             هل لديك حساب بالفعل؟{" "}
@@ -247,3 +239,5 @@ export default function SignupPage() {
     </div>
   )
 }
+
+    

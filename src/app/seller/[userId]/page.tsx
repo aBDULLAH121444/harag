@@ -9,9 +9,7 @@ import { Timestamp } from 'firebase/firestore';
 
 
 type UserProfileData = {
-    firstName: string;
-    lastName: string;
-    username: string;
+    name: string;
     photoURL?: string;
     createdAt: Timestamp;
 };
@@ -30,7 +28,7 @@ export default async function SellerPage({ params }: { params: { userId: string 
     }
     
     const profile = userProfile as UserProfileData;
-    const sellerName = `${profile.firstName} ${profile.lastName}`.trim() || profile.username;
+    const sellerName = profile.name || 'مستخدم غير معروف';
     
     const joinDate = profile.createdAt ? profile.createdAt.toDate() : new Date(2021, 5, 1);
 
@@ -72,3 +70,5 @@ export default async function SellerPage({ params }: { params: { userId: string 
         </div>
     );
 }
+
+    

@@ -56,12 +56,12 @@ export default function FilterBar() {
                 <Skeleton className="h-10 w-16" />
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
                 <div className="lg:col-span-2">
                     <Skeleton className="h-5 w-16 mb-1" />
                     <Skeleton className="h-10 w-full" />
                 </div>
-                <div className="lg:col-span-2">
+                <div>
                     <Skeleton className="h-5 w-12 mb-1" />
                     <Skeleton className="h-10 w-full" />
                 </div>
@@ -76,15 +76,14 @@ export default function FilterBar() {
     <Card className="mb-8 shadow-sm">
         <CardContent className="p-4 space-y-4">
             <div className="flex items-center gap-4">
-                <Button 
-                    variant={!selectedMake ? 'default' : 'outline'}
-                    onClick={() => setSelectedMake('')}
-                    className="shrink-0"
-                >
-                    الكل
-                </Button>
-                <ScrollArea className="flex-grow whitespace-nowrap">
+                <ScrollArea className="flex-grow whitespace-nowrap" dir="ltr">
                     <div className="flex w-max gap-2 pb-4">
+                        <Button 
+                            variant={!selectedMake ? 'default' : 'outline'}
+                            onClick={() => setSelectedMake('')}
+                        >
+                            الكل
+                        </Button>
                         {CAR_MAKES.map((make) => (
                             <Button
                                 key={make}
@@ -100,7 +99,7 @@ export default function FilterBar() {
                 </ScrollArea>
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
                 <div className="lg:col-span-2">
                      <label className="text-sm font-medium text-muted-foreground">الموديل</label>
                     <Select value={selectedModel} onValueChange={setSelectedModel} disabled={!selectedMake}>
@@ -116,7 +115,7 @@ export default function FilterBar() {
                         </SelectContent>
                     </Select>
                 </div>
-                <div className="lg:col-span-2">
+                <div>
                      <label className="text-sm font-medium text-muted-foreground">السنة</label>
                     <Select value={selectedYear} onValueChange={(val) => setSelectedYear(val === 'all' ? '' : val)}>
                         <SelectTrigger>

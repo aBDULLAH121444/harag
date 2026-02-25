@@ -9,10 +9,10 @@ type LogoProps = {
 
 const ToyotaLogo = ({ className }: LogoProps) => (
   <Image
-    src="https://res.cloudinary.com/dbm1benv0/image/upload/v1721833580/toyota-logo-black_xio6nx.png"
+    src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Toyota_logo.svg/1280px-Toyota_logo.svg.png"
     alt="Toyota Logo"
-    width={100}
-    height={100}
+    width={1280}
+    height={800}
     className={className}
     priority
   />
@@ -20,7 +20,7 @@ const ToyotaLogo = ({ className }: LogoProps) => (
 
 const HyundaiLogo = ({ className }: LogoProps) => (
     <Image
-        src="https://res.cloudinary.com/dbm1benv0/image/upload/v1721833579/hyundai-logo-black_vdpvlm.png"
+        src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Hyundai_logo_2.svg/1280px-Hyundai_logo_2.svg.png"
         alt="Hyundai Logo"
         width={1280}
         height={333}
@@ -42,10 +42,10 @@ const FordLogo = ({ className }: LogoProps) => (
 
 const MercedesLogo = ({ className }: LogoProps) => (
     <Image
-      src="https://res.cloudinary.com/dbm1benv0/image/upload/v1721833579/mercedes-logo-black_u6f84g.png"
+      src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Mercedes-Benz_text_logo.svg/2560px-Mercedes-Benz_text_logo.svg.png"
       alt="Mercedes-Benz Logo"
-      width={100}
-      height={100}
+      width={2560}
+      height={341}
       className={className}
       priority
     />
@@ -64,10 +64,10 @@ const BMWLogo = ({ className }: LogoProps) => (
 
 const NissanLogo = ({ className }: LogoProps) => (
     <Image
-      src="https://res.cloudinary.com/dbm1benv0/image/upload/v1721833579/nissan-logo-black_qwsefy.png"
+      src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Nissan-logo.png/600px-Nissan-logo.png"
       alt="Nissan Logo"
-      width={1280}
-      height={293}
+      width={600}
+      height={116}
       className={className}
       priority
     />
@@ -75,10 +75,10 @@ const NissanLogo = ({ className }: LogoProps) => (
 
 const KiaLogo = ({ className }: LogoProps) => (
     <Image
-      src="https://res.cloudinary.com/dbm1benv0/image/upload/v1721833579/kia-logo-black_d4qfld.png"
+      src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/KIA_logo2.svg/2560px-KIA_logo2.svg.png"
       alt="Kia Logo"
-      width={320}
-      height={63}
+      width={2560}
+      height={508}
       className={className}
       priority
     />
@@ -86,10 +86,10 @@ const KiaLogo = ({ className }: LogoProps) => (
 
 const LexusLogo = ({ className }: LogoProps) => (
     <Image
-      src="https://res.cloudinary.com/dbm1benv0/image/upload/v1721833579/lexus-logo-black_zbtgoy.png"
+      src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Lexus_division_wordmark.svg/2560px-Lexus_division_wordmark.svg.png"
       alt="Lexus Logo"
-      width={320}
-      height={228}
+      width={2560}
+      height={384}
       className={className}
       priority
     />

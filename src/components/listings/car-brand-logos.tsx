@@ -16,7 +16,6 @@ const ToyotaLogo = ({ className }: LogoProps) => (
     width={1280}
     height={800}
     className={className}
-    priority
   />
 );
 
@@ -27,7 +26,6 @@ const HyundaiLogo = ({ className }: LogoProps) => (
         width={1280}
         height={333}
         className={className}
-        priority
     />
 );
 
@@ -38,7 +36,6 @@ const FordLogo = ({ className }: LogoProps) => (
     width={1200}
     height={450}
     className={className}
-    priority
   />
 );
 
@@ -49,7 +46,6 @@ const MercedesLogo = ({ className }: LogoProps) => (
       width={2560}
       height={341}
       className={className}
-      priority
     />
 );
 
@@ -60,7 +56,6 @@ const BMWLogo = ({ className }: LogoProps) => (
       width={100}
       height={100}
       className={className}
-      priority
     />
 );
 
@@ -71,7 +66,6 @@ const NissanLogo = ({ className }: LogoProps) => (
       width={600}
       height={116}
       className={className}
-      priority
     />
 );
 
@@ -82,7 +76,6 @@ const KiaLogo = ({ className }: LogoProps) => (
       width={2560}
       height={508}
       className={className}
-      priority
     />
 );
 
@@ -93,7 +86,6 @@ const LexusLogo = ({ className }: LogoProps) => (
       width={2560}
       height={384}
       className={className}
-      priority
     />
 );
 
@@ -104,7 +96,6 @@ const ChevroletLogo = ({ className }: LogoProps) => (
       width={1200}
       height={311}
       className={className}
-      priority
     />
 );
 

@@ -57,11 +57,11 @@ export default function FilterBar() {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-                <div className="space-y-1">
+                <div>
                     <Skeleton className="h-5 w-16 mb-1" />
                     <Skeleton className="h-10 w-full" />
                 </div>
-                <div className="space-y-1">
+                <div>
                     <Skeleton className="h-5 w-12 mb-1" />
                     <Skeleton className="h-10 w-full" />
                 </div>
@@ -76,7 +76,7 @@ export default function FilterBar() {
     <Card className="mb-8 shadow-sm">
         <CardContent className="p-4 space-y-4">
             <ScrollArea className="w-full whitespace-nowrap">
-                <div className="flex w-max gap-2 pb-4 flex-row-reverse">
+                <div className="flex w-max gap-2 pb-4">
                     <Button 
                         variant={!selectedMake ? 'default' : 'outline'}
                         onClick={() => setSelectedMake('')}
@@ -98,7 +98,7 @@ export default function FilterBar() {
             </ScrollArea>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-                <div className="md:col-span-1">
+                <div>
                      <label className="text-sm font-medium text-muted-foreground">الموديل</label>
                     <Select value={selectedModel} onValueChange={setSelectedModel} disabled={!selectedMake}>
                         <SelectTrigger>
@@ -113,7 +113,7 @@ export default function FilterBar() {
                         </SelectContent>
                     </Select>
                 </div>
-                <div className="md:col-span-1">
+                <div>
                      <label className="text-sm font-medium text-muted-foreground">السنة</label>
                     <Select value={selectedYear} onValueChange={(val) => setSelectedYear(val === 'all' ? '' : val)}>
                         <SelectTrigger>

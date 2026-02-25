@@ -24,9 +24,9 @@ import { Wand2, Loader2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from 'next/navigation';
-import { useUser, useFirestore, FirestorePermissionError, errorEmitter } from '@/firebase';
+import { useUser, useFirestore } from '@/firebase';
 import Link from 'next/link';
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, doc, getDoc, serverTimestamp } from "firebase/firestore";
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import Image from 'next/image';
 
@@ -133,21 +133,26 @@ export default function ListingForm() {
   };
 
   async function onSubmit(data: ListingFormValues) {
-    if (!user) {
+    if (!user || !firestore) {
       toast({ variant: 'destructive', title: 'خطأ', description: 'يجب عليك تسجيل الدخول لإنشاء إعلان.' });
-      return;
-    }
-     if (!firestore) {
-      toast({ variant: 'destructive', title: 'خطأ', description: 'فشلت تهيئة قاعدة البيانات.' });
       return;
     }
     setIsSubmitting(true);
     setStatus("");
     
     try {
+        // Fetch user profile to denormalize data
+        const userProfileRef = doc(firestore, 'users', user.uid);
+        const userProfileSnap = await getDoc(userProfileRef);
+
+        if (!userProfileSnap.exists()) {
+            throw new Error("لم يتم العثور على ملفك الشخصي. لا يمكن إنشاء الإعلان.");
+        }
+        const userProfile = userProfileSnap.data();
+
         let imageUrls: string[] = [];
         if (imageFiles.length > 0) {
-            setStatus(`جاري رفع ${imageFiles.length} ${imageFiles.length > 1 ? 'صور' : 'صورة'} إلى Cloudinary...`);
+            setStatus(`جاري رفع ${imageFiles.length} ${imageFiles.length > 1 ? 'صور' : 'صورة'}...`);
             
             const uploadPromises = imageFiles.map(file => {
                 const formData = new FormData();
@@ -195,30 +200,21 @@ export default function ListingForm() {
             createdAt: serverTimestamp(),
             updatedAt: serverTimestamp(),
             viewCount: 0,
+            // Denormalized seller data for public display
+            sellerName: userProfile.name,
+            sellerPhoneNumber: userProfile.phoneNumber,
+            sellerPhotoURL: userProfile.photoURL || null,
+            sellerJoinedAt: userProfile.createdAt,
         };
 
-        addDoc(carListingsRef, newListingData)
-          .then(() => {
-            toast({ title: 'تم إنشاء القائمة', description: 'تم إنشاء قائمتك بنجاح!' });
-            router.push('/dashboard');
-          })
-          .catch((error) => {
-            console.error("Firestore Error:", error);
-            const permissionError = new FirestorePermissionError({
-                path: carListingsRef.path,
-                operation: 'create',
-                requestResourceData: newListingData,
-            });
-            errorEmitter.emit('permission-error', permissionError);
-            toast({ variant: 'destructive', title: 'خطأ', description: 'حدث خطأ أثناء إنشاء الإعلان. الرجاء معاودة المحاولة.' });
-          })
-          .finally(() => {
-            setIsSubmitting(false);
-            setStatus("");
-          });
-    } catch (uploadError: any) {
-        console.error("Upload failed:", uploadError);
-        toast({ variant: 'destructive', title: 'خطأ في رفع الصورة', description: uploadError.message || 'فشل رفع الصور. يرجى المحاولة مرة أخرى.' });
+        await addDoc(carListingsRef, newListingData);
+        toast({ title: 'تم إنشاء القائمة', description: 'تم إنشاء قائمتك بنجاح!' });
+        router.push('/dashboard');
+
+    } catch (err: any) {
+        console.error("Submission failed:", err);
+        toast({ variant: 'destructive', title: 'فشل الإرسال', description: err.message || 'حدث خطأ. يرجى المحاولة مرة أخرى.' });
+    } finally {
         setIsSubmitting(false);
         setStatus("");
     }

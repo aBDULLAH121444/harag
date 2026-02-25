@@ -33,10 +33,10 @@ function docToCar(docSnap: any): Car {
         features: data.features || [],
         images: images,
         seller: {
-            name: 'مستخدم غير معروف',
-            avatarUrl: undefined,
-            phoneNumber: undefined,
-            joinedAt: new Date(),
+            name: data.sellerName || 'مستخدم غير معروف',
+            avatarUrl: data.sellerPhotoURL,
+            phoneNumber: data.sellerPhoneNumber,
+            joinedAt: (data.sellerJoinedAt as Timestamp)?.toDate() || new Date(),
         },
         postedAt: (data.createdAt as Timestamp)?.toDate() || new Date(),
         condition: data.condition,
@@ -93,21 +93,6 @@ export async function getListingById(id: string): Promise<Car | undefined> {
 
   if (docSnap.exists()) {
     const car = docToCar(docSnap);
-    
-    // Attempt to fetch seller's profile for more details
-    try {
-        const userProfileSnap = await getDoc(doc(db, 'users', car.userId));
-        if (userProfileSnap.exists()) {
-            const userData = userProfileSnap.data();
-            car.seller.name = userData.name || 'مستخدم غير معروف';
-            car.seller.avatarUrl = userData.photoURL;
-            car.seller.phoneNumber = userData.phoneNumber;
-            car.seller.joinedAt = (userData.createdAt as Timestamp)?.toDate() || new Date();
-        }
-    } catch (e) {
-        console.error(`Failed to fetch user profile for ${car.userId}:`, e);
-    }
-    
     return car;
   } else {
     return undefined; // Not found

@@ -16,7 +16,7 @@ export default function CarCard({ car }: CarCardProps) {
 
   return (
     <Link href={`/listings/${car.id}`} className="group">
-      <Card className="h-full flex flex-col overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+      <Card className="h-full flex flex-col overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow">
         <CardHeader className="p-0 relative">
           {firstImage ? (
             <Image
@@ -24,41 +24,43 @@ export default function CarCard({ car }: CarCardProps) {
               alt={`${car.make} ${car.model}`}
               width={600}
               height={400}
-              className="aspect-video object-cover"
+              className="aspect-[4/3] object-cover"
               data-ai-hint={firstImage.imageHint}
             />
           ) : (
-            <div className="aspect-video bg-muted flex items-center justify-center">
-              <CarIcon className="w-12 h-12 text-muted-foreground" />
+            <div className="aspect-[4/3] bg-muted flex items-center justify-center">
+              <CarIcon className="w-10 h-10 text-muted-foreground" />
             </div>
           )}
-          <Badge variant="secondary" className="absolute top-2 left-2">{car.condition}</Badge>
-          <div className="absolute top-0 right-0 bg-black bg-opacity-60 text-white px-3 py-1 rounded-bl-lg">
-            <h3 className="text-sm font-semibold truncate group-hover:text-white/90 transition-colors">
-              {car.make} {car.model}
+          <Badge variant="secondary" className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm text-[10px] py-0 px-2">{car.condition}</Badge>
+          <div className="absolute bottom-0 right-0 left-0 bg-gradient-to-t from-black/60 to-transparent p-3 pt-8">
+            <h3 className="text-white font-bold text-sm leading-tight">
+              {car.make} {car.model} {car.year}
             </h3>
           </div>
         </CardHeader>
-        <CardContent className="flex-grow p-4">
-          <div className="text-sm text-muted-foreground space-y-2">
-            <div className="flex items-center gap-2">
-              <Tag className="w-4 h-4 text-accent" />
-              <span className="font-semibold text-base text-primary">{car.price.toLocaleString()} {car.currency}</span>
+        <CardContent className="flex-grow p-3 space-y-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1">
+              <span className="font-bold text-lg text-primary">{car.price.toLocaleString()}</span>
+              <span className="text-[10px] text-muted-foreground">{car.currency}</span>
             </div>
-            <div className="flex items-center gap-2">
-              <Gauge className="w-4 h-4" />
+          </div>
+          <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-[11px] text-muted-foreground">
+            <div className="flex items-center gap-1">
+              <Gauge className="w-3 h-3 text-accent" />
               <span>{car.mileage.toLocaleString()} كم</span>
             </div>
-            <div className="flex items-center gap-2">
-              <MapPin className="w-4 h-4" />
-              <span>{car.location}</span>
+            <div className="flex items-center gap-1">
+              <MapPin className="w-3 h-3 text-accent" />
+              <span className="truncate">{car.location}</span>
             </div>
           </div>
         </CardContent>
-        <CardFooter className="p-4 pt-0 text-xs text-muted-foreground">
-            <div className="flex items-center gap-1">
-                <Calendar className="w-3 h-3 ml-1" />
-                <span>نشرت {formatDistanceToNow(car.postedAt, { addSuffix: true, locale: arSA })}</span>
+        <CardFooter className="p-3 pt-0 text-[10px] text-muted-foreground border-t border-gray-50 mt-1">
+            <div className="flex items-center gap-1 mt-2">
+                <Calendar className="w-3 h-3" />
+                <span>قبل {formatDistanceToNow(car.postedAt, { locale: arSA })}</span>
             </div>
         </CardFooter>
       </Card>

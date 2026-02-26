@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Car, PlusCircle, LogOut, LayoutDashboard } from 'lucide-react';
+import { Car, LogOut, LayoutDashboard, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useUser, useAuth } from '@/firebase';
 import { signOut } from 'firebase/auth';
@@ -15,10 +15,12 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Skeleton } from '../ui/skeleton';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export function Header() {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
+  const isMobile = useIsMobile();
 
   const handleSignOut = async () => {
     if (auth) {
@@ -36,31 +38,34 @@ export function Header() {
   };
 
   return (
-    <header className="bg-card shadow-md sticky top-0 z-40">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
+    <header className="bg-white border-b sticky top-0 z-40 h-14 md:h-16">
+      <div className="container mx-auto flex h-full items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-2">
-          <Car className="h-8 w-8 text-primary" />
-          <span className="text-xl font-bold text-primary font-headline tracking-tight">
+          <Car className="h-6 w-6 md:h-8 md:w-8 text-primary" />
+          <span className="text-lg md:text-xl font-bold text-primary font-headline tracking-tight">
             حراج اليمن
           </span>
         </Link>
-        <nav className="flex items-center gap-2 sm:gap-4">
+        <nav className="flex items-center gap-2">
           {isUserLoading ? (
-            <Skeleton className="h-10 w-28" />
+            <Skeleton className="h-8 w-8 rounded-full" />
           ) : user ? (
             <>
-              <Button asChild size="sm" className="bg-accent hover:bg-accent/90 text-accent-foreground">
-                <Link href="/sell">
-                  <PlusCircle className="ml-2 h-4 w-4" />
-                  أضف إعلان
-                </Link>
-              </Button>
+              {!isMobile && (
+                <Button asChild size="sm" className="bg-accent hover:bg-accent/90 text-accent-foreground ml-2">
+                  <Link href="/sell">
+                    أضف إعلان
+                  </Link>
+                </Button>
+              )}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                    <Avatar className="h-10 w-10">
+                  <Button variant="ghost" className="relative h-9 w-9 md:h-10 md:w-10 rounded-full p-0">
+                    <Avatar className="h-full w-full">
                       {user.photoURL && <AvatarImage src={user.photoURL} alt={user.displayName || ''} />}
-                      <AvatarFallback>{getInitials(user.displayName)}</AvatarFallback>
+                      <AvatarFallback className="bg-primary/10 text-primary text-xs">
+                        {getInitials(user.displayName)}
+                      </AvatarFallback>
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
@@ -74,24 +79,22 @@ export function Header() {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
                     <Link href="/dashboard">
-                      <LayoutDashboard className="mr-2 h-4 w-4" />
+                      <LayoutDashboard className="ml-2 h-4 w-4" />
                       <span>لوحة التحكم</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleSignOut}>
-                    <LogOut className="mr-2 h-4 w-4" />
+                  <DropdownMenuItem onClick={handleSignOut} className="text-red-600">
+                    <LogOut className="ml-2 h-4 w-4" />
                     <span>تسجيل الخروج</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </>
           ) : (
-            <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" asChild>
-                  <Link href="/login">تسجيل الدخول</Link>
-                </Button>
-            </div>
+            <Button variant="outline" size="sm" asChild className="h-8 px-3 text-xs">
+              <Link href="/login">تسجيل الدخول</Link>
+            </Button>
           )}
         </nav>
       </div>

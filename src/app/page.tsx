@@ -1,6 +1,8 @@
 import { getListings } from '@/lib/data';
 import CarCard from '@/components/listings/car-card';
 import FilterBar from '@/components/listings/filter-bar';
+import { Suspense } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default async function Home({
   searchParams,
@@ -15,7 +17,9 @@ export default async function Home({
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <FilterBar />
+      <Suspense fallback={<Skeleton className="h-40 w-full mb-8 rounded-lg" />}>
+        <FilterBar />
+      </Suspense>
 
       <section className="mt-8">
         {listings.length > 0 ? (

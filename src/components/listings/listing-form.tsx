@@ -16,9 +16,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CAR_MAKES, CAR_MODELS, CAR_YEARS, CAR_FEATURES, CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET, YEMENI_GOVERNORATES } from '@/lib/constants';
+import { CAR_MAKES, CAR_MODELS, CAR_YEARS, CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET, YEMENI_GOVERNORATES } from '@/lib/constants';
 import { generateCarDescription } from '@/lib/actions';
 import { Wand2, Loader2, Save, Edit } from 'lucide-react';
 import { useState, useEffect } from 'react';
@@ -40,7 +39,6 @@ const listingFormSchema = z.object({
   mileage: z.string().min(1, 'المسافة المقطوعة مطلوبة').regex(/^\d+$/, "يجب أن تكون المسافة المقطوعة رقمًا"),
   location: z.string().min(1, 'الموقع مطلوب'),
   description: z.string().optional(),
-  features: z.array(z.string()),
   sellerNotes: z.string().optional(),
 });
 
@@ -72,7 +70,6 @@ export default function ListingForm() {
       mileage: '',
       location: '',
       description: '',
-      features: [],
       sellerNotes: '',
     },
   });
@@ -106,7 +103,6 @@ export default function ListingForm() {
                         mileage: String(data.mileage),
                         location: data.location,
                         description: data.description,
-                        features: data.features || [],
                         sellerNotes: data.sellerNotes || '',
                     });
                     setImagePreviews(data.images || []);
@@ -166,7 +162,7 @@ export default function ListingForm() {
       mileage: parseInt(values.mileage, 10),
       price: parseInt(values.price, 10),
       condition: 'جيد', // Default condition for AI helper
-      features: values.features,
+      features: [], // Removed from form
       sellerNotes: values.sellerNotes,
     });
     setIsGenerating(false);
@@ -228,7 +224,7 @@ export default function ListingForm() {
             mileage: parseInt(data.mileage, 10),
             location: data.location,
             condition: 'جيد', // Default condition as it's removed from form
-            features: data.features,
+            features: [], // Removed from form
             updatedAt: serverTimestamp(),
         };
 
@@ -448,44 +444,6 @@ export default function ListingForm() {
                     </div>
                 )}
             </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="space-y-6 pt-6">
-             <FormField
-              control={form.control}
-              name="features"
-              render={() => (
-                <FormItem>
-                    <FormLabel>الميزات</FormLabel>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        {CAR_FEATURES.map((feature) => (
-                        <FormField
-                            key={feature}
-                            control={form.control}
-                            name="features"
-                            render={({ field }) => (
-                            <FormItem key={feature} className="flex flex-row items-center space-x-3 space-y-0">
-                                <FormControl>
-                                <Checkbox
-                                    checked={field.value?.includes(feature)}
-                                    onCheckedChange={(checked) => {
-                                    return checked
-                                        ? field.onChange([...(field.value || []), feature])
-                                        : field.onChange(field.value?.filter((value) => value !== feature));
-                                    }}
-                                />
-                                </FormControl>
-                                <FormLabel className="font-normal">{feature}</FormLabel>
-                            </FormItem>
-                            )}
-                        />
-                        ))}
-                    </div>
-                </FormItem>
-              )}
-            />
-          </CardContent>
         </Card>
 
         <Card>

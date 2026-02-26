@@ -39,7 +39,6 @@ const listingFormSchema = z.object({
   mileage: z.string().min(1, 'المسافة المقطوعة مطلوبة').regex(/^\d+$/, "يجب أن تكون المسافة المقطوعة رقمًا"),
   location: z.string().min(1, 'الموقع مطلوب'),
   description: z.string().optional(),
-  sellerNotes: z.string().optional(),
 });
 
 type ListingFormValues = z.infer<typeof listingFormSchema>;
@@ -70,7 +69,6 @@ export default function ListingForm() {
       mileage: '',
       location: '',
       description: '',
-      sellerNotes: '',
     },
   });
   
@@ -103,7 +101,6 @@ export default function ListingForm() {
                         mileage: String(data.mileage),
                         location: data.location,
                         description: data.description,
-                        sellerNotes: data.sellerNotes || '',
                     });
                     setImagePreviews(data.images || []);
                 } else {
@@ -163,7 +160,7 @@ export default function ListingForm() {
       price: parseInt(values.price, 10),
       condition: 'جيد', // Default condition for AI helper
       features: [], // Removed from form
-      sellerNotes: values.sellerNotes,
+      sellerNotes: '', // Field removed from UI
     });
     setIsGenerating(false);
 
@@ -461,20 +458,6 @@ export default function ListingForm() {
                     <Textarea placeholder="صف سيارتك بالتفصيل..." className="min-h-[150px]" {...field} />
                   </FormControl>
                   <FormDescription>الوصف المفصل يساعد على بيع سيارتك بشكل أسرع.</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-             <FormField
-              control={form.control}
-              name="sellerNotes"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>ملاحظات البائع (اختياري)</FormLabel>
-                  <FormControl>
-                    <Input placeholder="مثال: تمت الصيانة مؤخرًا، إطارات جديدة" {...field} />
-                  </FormControl>
-                   <FormDescription>أضف أي مميزات إضافية لمساعد الذكاء الاصطناعي.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

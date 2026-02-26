@@ -18,8 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CAR_MAKES, CAR_MODELS, CAR_YEARS, CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET, YEMENI_GOVERNORATES } from '@/lib/constants';
-import { generateCarDescription } from '@/lib/actions';
-import { Wand2, Loader2, Save, Edit } from 'lucide-react';
+import { Loader2, Save, Edit } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -44,7 +43,6 @@ const listingFormSchema = z.object({
 type ListingFormValues = z.infer<typeof listingFormSchema>;
 
 export default function ListingForm() {
-  const [isGenerating, setIsGenerating] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState('');
   const [imageFiles, setImageFiles] = useState<File[]>([]);
@@ -73,7 +71,6 @@ export default function ListingForm() {
   });
   
   useEffect(() => {
-    // This is a cleanup function that will run when the component unmounts.
     return () => {
       imagePreviews.forEach(url => {
         if (url.startsWith('blob:')) {
@@ -124,7 +121,6 @@ export default function ListingForm() {
       const fileArray = Array.from(files);
       setImageFiles(fileArray);
       
-      // Clean up previous previews before creating new ones
       imagePreviews.forEach(url => {
         if (url.startsWith('blob:')) {
           URL.revokeObjectURL(url)
@@ -136,39 +132,6 @@ export default function ListingForm() {
     } else {
       setImageFiles([]);
       setImagePreviews([]);
-    }
-  };
-
-  const handleGenerateDescription = async () => {
-    setIsGenerating(true);
-    const values = form.getValues();
-    const year = parseInt(values.year, 10);
-    const mileage = parseInt(values.mileage, 10);
-    const price = parseInt(values.price, 10);
-
-    if (isNaN(year) || isNaN(mileage) || isNaN(price)) {
-      toast({ variant: 'destructive', title: 'خطأ', description: 'يرجى إدخال قيم رقمية صالحة للسنة والسعر والمسافة المقطوعة.' });
-      setIsGenerating(false);
-      return;
-    }
-    
-    const result = await generateCarDescription({
-      make: values.make,
-      model: values.model,
-      year: parseInt(values.year, 10),
-      mileage: parseInt(values.mileage, 10),
-      price: parseInt(values.price, 10),
-      condition: 'جيد', // Default condition for AI helper
-      features: [], // Removed from form
-      sellerNotes: '', // Field removed from UI
-    });
-    setIsGenerating(false);
-
-    if (result.description) {
-      form.setValue('description', result.description, { shouldValidate: true });
-      toast({ title: 'نجاح', description: 'تم إنشاء الوصف بنجاح!' });
-    } else {
-      toast({ variant: 'destructive', title: 'خطأ', description: result.error });
     }
   };
 
@@ -220,8 +183,8 @@ export default function ListingForm() {
             images: finalImageUrls,
             mileage: parseInt(data.mileage, 10),
             location: data.location,
-            condition: 'جيد', // Default condition as it's removed from form
-            features: [], // Removed from form
+            condition: 'جيد',
+            features: [],
             updatedAt: serverTimestamp(),
         };
 
@@ -462,10 +425,6 @@ export default function ListingForm() {
                 </FormItem>
               )}
             />
-            <Button type="button" variant="outline" onClick={handleGenerateDescription} disabled={isGenerating}>
-              {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="ml-2 h-4 w-4" />}
-              {isGenerating ? 'جاري الإنشاء...' : 'مساعد الوصف الذكي'}
-            </Button>
           </CardContent>
         </Card>
 

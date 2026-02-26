@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Car, PlusCircle, LogOut, LayoutDashboard, UserPlus } from 'lucide-react';
+import { Car, PlusCircle, LogOut, LayoutDashboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useUser, useAuth } from '@/firebase';
 import { signOut } from 'firebase/auth';
@@ -88,12 +88,6 @@ export function Header() {
             </>
           ) : (
             <div className="flex items-center gap-2">
-                <Button asChild size="sm">
-                  <Link href="/signup">
-                    <UserPlus className="ml-2 h-4 w-4" />
-                    سجل
-                  </Link>
-                </Button>
                 <Button variant="outline" size="sm" asChild>
                   <Link href="/login">تسجيل الدخول</Link>
                 </Button>

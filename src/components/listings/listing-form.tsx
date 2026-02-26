@@ -159,14 +159,14 @@ export default function ListingForm() {
             const uploadResults = await Promise.all(uploadPromises);
             finalImageUrls = uploadResults.map(result => {
                 if (!result.secure_url) {
-                    throw new Error(result.error?.message || "فشل أحد الصور في الرفع إلى Cloudinary.");
+                    throw new Error(result.error?.message || "فشل رفع الصورة.");
                 }
                 return result.secure_url;
             });
         } else if (isEditing) {
             finalImageUrls = imagePreviews;
         } else {
-            finalImageUrls = PlaceHolderImages.filter(img => !img.id.startsWith('avatar-'))
+            finalImageUrls = PlaceHolderImages.filter(img => !img.id.startsWith('avatar-') && !img.id.startsWith('logo-'))
                                                .sort(() => 0.5 - Math.random())
                                                .slice(0, 3)
                                                .map(img => img.imageUrl);
@@ -199,7 +199,7 @@ export default function ListingForm() {
             const userProfileSnap = await getDoc(userProfileRef);
 
             if (!userProfileSnap.exists()) {
-                throw new Error("لم يتم العثور على ملفك الشخصي. لا يمكن إنشاء الإعلان.");
+                throw new Error("لم يتم العثور على ملفك الشخصي.");
             }
             const userProfile = userProfileSnap.data();
 
@@ -255,12 +255,12 @@ export default function ListingForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <Card>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <Card className="border-none shadow-sm">
           <CardHeader>
-            <CardTitle>تفاصيل السيارة</CardTitle>
+            <CardTitle className="text-lg">تفاصيل السيارة</CardTitle>
           </CardHeader>
-          <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
               control={form.control}
               name="make"
@@ -272,7 +272,7 @@ export default function ListingForm() {
                     form.setValue('model', '');
                   }} value={field.value}>
                     <FormControl>
-                      <SelectTrigger><SelectValue placeholder="اختر الشركة المصنعة" /></SelectTrigger>
+                      <SelectTrigger className="rounded-lg"><SelectValue placeholder="اختر الشركة" /></SelectTrigger>
                     </FormControl>
                     <SelectContent>{CAR_MAKES.map(make => <SelectItem key={make} value={make}>{make}</SelectItem>)}</SelectContent>
                   </Select>
@@ -288,7 +288,7 @@ export default function ListingForm() {
                   <FormLabel>الموديل</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value} disabled={!selectedMake}>
                     <FormControl>
-                      <SelectTrigger><SelectValue placeholder="اختر الموديل" /></SelectTrigger>
+                      <SelectTrigger className="rounded-lg"><SelectValue placeholder="اختر الموديل" /></SelectTrigger>
                     </FormControl>
                     <SelectContent>{selectedMake && CAR_MODELS[selectedMake]?.map(model => <SelectItem key={model} value={model}>{model}</SelectItem>)}</SelectContent>
                   </Select>
@@ -304,7 +304,7 @@ export default function ListingForm() {
                   <FormLabel>السنة</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
-                      <SelectTrigger><SelectValue placeholder="اختر السنة" /></SelectTrigger>
+                      <SelectTrigger className="rounded-lg"><SelectValue placeholder="اختر السنة" /></SelectTrigger>
                     </FormControl>
                     <SelectContent>{CAR_YEARS.map(year => <SelectItem key={year} value={String(year)}>{year}</SelectItem>)}</SelectContent>
                   </Select>
@@ -319,7 +319,7 @@ export default function ListingForm() {
                 <FormItem>
                   <FormLabel>المسافة المقطوعة (كم)</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="مثال: 80000" {...field} />
+                    <Input type="number" placeholder="مثال: 80000" {...field} className="rounded-lg" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -332,7 +332,7 @@ export default function ListingForm() {
                 <FormItem>
                   <FormLabel>السعر</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="مثال: 95000" {...field} />
+                    <Input type="number" placeholder="مثال: 95000" {...field} className="rounded-lg" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -346,7 +346,7 @@ export default function ListingForm() {
                   <FormLabel>العملة</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
-                      <SelectTrigger><SelectValue placeholder="اختر العملة" /></SelectTrigger>
+                      <SelectTrigger className="rounded-lg"><SelectValue placeholder="اختر العملة" /></SelectTrigger>
                     </FormControl>
                     <SelectContent>
                         <SelectItem value="ريال سعودي">ريال سعودي</SelectItem>
@@ -366,7 +366,7 @@ export default function ListingForm() {
                   <FormLabel>الموقع</FormLabel>
                    <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
-                      <SelectTrigger><SelectValue placeholder="اختر الموقع" /></SelectTrigger>
+                      <SelectTrigger className="rounded-lg"><SelectValue placeholder="اختر الموقع" /></SelectTrigger>
                     </FormControl>
                     <SelectContent>{YEMENI_GOVERNORATES.map(loc => <SelectItem key={loc} value={loc}>{loc}</SelectItem>)}</SelectContent>
                   </Select>
@@ -377,8 +377,8 @@ export default function ListingForm() {
           </CardContent>
         </Card>
 
-        <Card>
-            <CardHeader><CardTitle>صور الإعلان</CardTitle></CardHeader>
+        <Card className="border-none shadow-sm">
+            <CardHeader><CardTitle className="text-lg">صور الإعلان</CardTitle></CardHeader>
             <CardContent>
                 <FormField
                     control={form.control}
@@ -387,18 +387,18 @@ export default function ListingForm() {
                         <FormItem>
                             <FormLabel>ارفع صورًا لسيارتك</FormLabel>
                             <FormControl>
-                                <Input type="file" accept="image/*" multiple onChange={handleImageChange} />
+                                <Input type="file" accept="image/*" multiple onChange={handleImageChange} className="rounded-lg" />
                             </FormControl>
-                            <FormDescription>يمكنك رفع عدة صور. سيتم رفع الصور إلى Cloudinary.</FormDescription>
+                            <FormDescription>يمكنك اختيار عدة صور لسيارتك.</FormDescription>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
                 {imagePreviews.length > 0 && (
-                    <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-2">
                         {imagePreviews.map((preview, index) => (
                              <div key={index} className="relative aspect-video">
-                                <Image src={preview} alt={`معاينة الصورة ${index + 1}`} fill className="rounded-md object-cover" />
+                                <Image src={preview} alt={`معاينة الصورة ${index + 1}`} fill className="rounded-lg object-cover" />
                             </div>
                         ))}
                     </div>
@@ -406,11 +406,11 @@ export default function ListingForm() {
             </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-none shadow-sm">
           <CardHeader>
-            <CardTitle>الوصف</CardTitle>
+            <CardTitle className="text-lg">الوصف</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent>
              <FormField
               control={form.control}
               name="description"
@@ -418,9 +418,8 @@ export default function ListingForm() {
                 <FormItem>
                   <FormLabel>وصف الإعلان</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="صف سيارتك بالتفصيل..." className="min-h-[150px]" {...field} />
+                    <Textarea placeholder="صف سيارتك بالتفصيل..." className="min-h-[120px] rounded-lg" {...field} />
                   </FormControl>
-                  <FormDescription>الوصف المفصل يساعد على بيع سيارتك بشكل أسرع.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -428,8 +427,8 @@ export default function ListingForm() {
           </CardContent>
         </Card>
 
-        <Button type="submit" size="lg" className="w-full md:w-auto" disabled={isSubmitting}>
-           {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : (isEditing ? <Edit className="mr-2 h-4 w-4" /> : <Save className="mr-2 h-4 w-4" />)}
+        <Button type="submit" size="lg" className="w-full rounded-xl font-bold h-12" disabled={isSubmitting}>
+           {isSubmitting ? <Loader2 className="ml-2 h-5 w-5 animate-spin" /> : (isEditing ? <Edit className="ml-2 h-5 w-5" /> : <Save className="ml-2 h-5 w-5" />)}
            {isSubmitting ? (status || 'جاري الإرسال...') : (isEditing ? 'تحديث الإعلان' : 'إنشاء الإعلان')}
         </Button>
       </form>

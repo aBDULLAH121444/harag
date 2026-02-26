@@ -39,7 +39,6 @@ const listingFormSchema = z.object({
   currency: z.string().min(1, 'العملة مطلوبة'),
   mileage: z.string().min(1, 'المسافة المقطوعة مطلوبة').regex(/^\d+$/, "يجب أن تكون المسافة المقطوعة رقمًا"),
   location: z.string().min(1, 'الموقع مطلوب'),
-  condition: z.string().min(1, 'الحالة مطلوبة'),
   description: z.string().optional(),
   features: z.array(z.string()),
   sellerNotes: z.string().optional(),
@@ -72,7 +71,6 @@ export default function ListingForm() {
       currency: 'ريال سعودي',
       mileage: '',
       location: '',
-      condition: '',
       description: '',
       features: [],
       sellerNotes: '',
@@ -107,7 +105,6 @@ export default function ListingForm() {
                         currency: data.currency,
                         mileage: String(data.mileage),
                         location: data.location,
-                        condition: data.condition,
                         description: data.description,
                         features: data.features || [],
                         sellerNotes: data.sellerNotes || '',
@@ -168,7 +165,7 @@ export default function ListingForm() {
       year: parseInt(values.year, 10),
       mileage: parseInt(values.mileage, 10),
       price: parseInt(values.price, 10),
-      condition: values.condition,
+      condition: 'جيد', // Default condition for AI helper
       features: values.features,
       sellerNotes: values.sellerNotes,
     });
@@ -230,7 +227,7 @@ export default function ListingForm() {
             images: finalImageUrls,
             mileage: parseInt(data.mileage, 10),
             location: data.location,
-            condition: data.condition,
+            condition: 'جيد', // Default condition as it's removed from form
             features: data.features,
             updatedAt: serverTimestamp(),
         };
@@ -454,26 +451,7 @@ export default function ListingForm() {
         </Card>
 
         <Card>
-          <CardHeader>
-            <CardTitle>الحالة والميزات</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <FormField
-              control={form.control}
-              name="condition"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>الحالة</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger><SelectValue placeholder="اختر حالة السيارة" /></SelectTrigger>
-                    </FormControl>
-                    <SelectContent>{['جديد', 'شبه جديد', 'جيد', 'مقبول'].map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <CardContent className="space-y-6 pt-6">
              <FormField
               control={form.control}
               name="features"
